@@ -32,18 +32,22 @@ public class GameTest {
     private Game gameInstance_case2;
     private Game gameInstance_case3;
     private Game gameInstance_case4;
+    private Game gameInstance_case5;
 
     private List<List<Card>> tableau_case2;
     private List<List<Card>> tableau_case3;
     private List<List<Card>> tableau_case4;
+    private List<List<Card>> tableau_case5;
 
     private FreeCells frecell_case2;
     private FreeCells frecell_case3;
     private FreeCells frecell_case4;
+    private FreeCells frecell_case5;
 
     private HomeCells homecell_case2;
     private HomeCells homecell_case3;
     private HomeCells homecell_case4;
+    private HomeCells homecell_case5;
 
     public GameTest() {
     }
@@ -55,8 +59,10 @@ public class GameTest {
         gameInstance_case2 = new Game();
 
         gameInstance_case3 = new Game();
-        
+
         gameInstance_case4 = new Game();
+
+        gameInstance_case5 = new Game();
 
         //test case 2
         tableau_case2 = new ArrayList<>();
@@ -114,6 +120,26 @@ public class GameTest {
         gameInstance_case4.setFreeCell(frecell_case4);
         gameInstance_case4.setHomeCell(homecell_case4);
         gameInstance_case4.setTableau(tableau_case4);
+
+        //test case 5
+        tableau_case5 = new ArrayList<>();
+        List<Card> pile_case5_1 = new ArrayList<>();
+        pile_case5_1.add(new Card("clubs", 8));
+        pile_case5_1.add(new Card("hearts", 1));
+        tableau_case5.add(pile_case5_1);
+
+        List<Card> pile_case5_2 = new ArrayList<>();
+        pile_case5_2.add(new Card("spades", 12));
+        pile_case5_2.add(new Card("hearts", 2));
+        tableau_case5.add(pile_case5_2);
+
+        frecell_case5 = new FreeCells();
+        homecell_case5 = new HomeCells();
+
+        gameInstance_case5.setFreeCell(frecell_case5);
+        gameInstance_case5.setHomeCell(homecell_case5);
+        gameInstance_case5.setTableau(tableau_case5);
+
     }
 
     @After
@@ -158,7 +184,7 @@ public class GameTest {
         //heart 1(ace) from tableau to homecell
         boolean success = gameInstance_case3.addToHomeCell(gameInstance_case3.tableau.get(0).get(gameInstance_case3.tableau.get(0).size() - 1),
                 gameInstance_case3.homeCells.piles.get("hearts").get(gameInstance_case3.homeCells.piles.get("hearts").size() - 1));
-        
+
         assertEquals(true, success);
         assertEquals("clubs", gameInstance_case3.tableau.get(0).get(gameInstance_case3.tableau.get(0).size() - 1).getSuit());
         assertEquals("hearts", gameInstance_case3.homeCells.piles.get("hearts").get(gameInstance_case3.homeCells.piles.get("hearts").size() - 1).getSuit());
@@ -172,7 +198,7 @@ public class GameTest {
     @Test
     public void testAddToFreeCell() {
         System.out.println("addToFreeCell");
-        
+
         boolean success = gameInstance_case4.addToFreeCell(gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1));
         assertEquals(true, success);
         assertEquals("clubs", gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1).getSuit());
@@ -184,52 +210,11 @@ public class GameTest {
     /**
      * Test of isLast method, of class Game.
      */
-//    @Test
-//    public void testIsLast() {
-//        System.out.println("isLast");
-//        Card card = null;
-//        Game instance = new Game();
-//        boolean expResult = false;
-//        boolean result = instance.isLast(card);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-    /**
-     * Test of saveGame method, of class Game.
-     */
-//    @Test
-//    public void testSaveGame() {
-//        System.out.println("saveGame");
-//        String name = "";
-//        Game instance = new Game();
-//        instance.saveGame(name);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-    /**
-     * Test of loadGame method, of class Game.
-     */
-//    @Test
-//    public void testLoadGame() {
-//        System.out.println("loadGame");
-//        String name = "";
-//        Game instance = new Game();
-//        instance.loadGame(name);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
-    /**
-     * Test of getSavedGames method, of class Game.
-     */
-//    @Test
-//    public void testGetSavedGames() {
-//        System.out.println("getSavedGames");
-//        Game instance = new Game();
-//        List<String> expResult = null;
-//        List<String> result = instance.getSavedGames();
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
-//    }
+    @Test
+    public void testIsLast() {
+        System.out.println("isLast");
+
+        boolean success = gameInstance_case5.isLast(gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1));
+        assertEquals(true, success);
+    }
 }
