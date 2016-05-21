@@ -27,4 +27,16 @@ public interface GameI {
      * Kezdeti ertekek
      */
     public void newGame();
+    
+    public void saveGame(String name);
+    
+    public void loadGame(String name);
+    
+    public boolean addToTableau(Card cardSource, Card cardTarget); 
+    
+    public boolean addToHomeCell(Card cardSource, Card cardTarget);
+    
+    public boolean addToFreeCell(Card cardSource);
+    
+    public boolean isLast(Card card);
 }

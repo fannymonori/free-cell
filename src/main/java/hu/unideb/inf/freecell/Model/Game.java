@@ -49,8 +49,6 @@ import org.xml.sax.SAXException;
  */
 public class Game implements GameI {
 
-    //public Tableau tableau;
-    //public List<Pile> tableau;
     public List<List<Card>> tableau;
 
     public HomeCells homeCells;
@@ -91,13 +89,7 @@ public class Game implements GameI {
         freeCells = new FreeCells();
     }
 
-    /**
-     *
-     * @param cardSource
-     * @param cardTarget
-     * @return
-     */
-    //@Override
+    @Override
     public boolean addToTableau(Card cardSource, Card cardTarget) {
 
         if (!this.isLast(cardTarget)) {
@@ -123,7 +115,6 @@ public class Game implements GameI {
                 return false;
             } else {
 
-                //REFERENCUÁKRA MINDENHOL FIGYELNI
                 int targetIndex = getCardPileIndex(cardTarget);
                 int sourceIndex = getCardPileIndex(cardSource);
 
@@ -163,13 +154,13 @@ public class Game implements GameI {
             p.add(new Card(cardSource.getSuit(), cardSource.getRank()));
             tableau.set(targetIndex, p);
 
-            //EBBŐL MÉG BAJ LHET
             freeCells.cards.remove(index);
         }
 
         return true;
     }
 
+    @Override
     public boolean addToHomeCell(Card cardSource, Card cardTarget) {
 
         if (!isHomeCellCard(cardTarget)) {
@@ -199,7 +190,7 @@ public class Game implements GameI {
         p.add(new Card(cardSource.getSuit(), cardSource.getRank()));
         homeCells.piles.put(cardTarget.getSuit(), p);
 
-        //=================================777
+        //=================================
         if (isTableauCard(cardSource)) {
             List<Card> p2 = new ArrayList<>();
             for (int i = 0; i < tableau.get(sourceIndex).size() - 1; i++) {
@@ -225,6 +216,7 @@ public class Game implements GameI {
         return true;
     }
 
+    @Override
     public boolean addToFreeCell(Card cardSource) {
 
         if (freeCells.cards.size() == 4) {
@@ -232,7 +224,6 @@ public class Game implements GameI {
             return false;
         }
 
-        //homecell to freecell not valid move
         freeCells.cards.add(new Card(cardSource.getSuit(), cardSource.getRank()));
         if (isTableauCard(cardSource)) {
 
@@ -253,31 +244,240 @@ public class Game implements GameI {
         return true;
     }
 
-    public boolean isHomeCellCard(Card c) {
-        return homeCells.piles.entrySet().stream().anyMatch((entry) -> (entry.getValue().get(entry.getValue().size() - 1).equals(c)));
-    }
-
-    private int getCardPileIndex(Card card) {
-        for (int i = 0; i < this.tableau.size(); i++) {
-            //LOGGER.info(tableau.get(i).peekCard().toString());
-            if (this.tableau.get(i).get(tableau.get(i).size() - 1).equals(card)) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
+    @Override
     public boolean isLast(Card card) {
         for (int i = 0; i < this.tableau.size(); i++) {
-            //LOGGER.info("last:" + this.tableau.piles.get(i).peekCard().getSuit());
-            //LOGGER.info(card.getSuit());
             if (this.tableau.get(i).get(tableau.get(i).size() - 1).equals(card)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    @Override
+    public void saveGame(String name) {
+
+        try {
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.newDocument();
+            Element rootElement = doc.createElement("freecell");
+            doc.appendChild(rootElement);
+
+            Element savedGameElement = doc.createElement("game");
+            rootElement.appendChild(savedGameElement);
+            Attr nameAttr = doc.createAttribute("name");
+            nameAttr.setValue(name);
+            savedGameElement.setAttributeNode(nameAttr);
+
+            Element tableauElement = doc.createElement("tableau");
+            savedGameElement.appendChild(tableauElement);
+
+            for (int i = 0; i < 8; i++) {
+                Element pileElement = doc.createElement("pile");
+                tableauElement.appendChild(pileElement);
+
+                for (Card c : tableau.get(i)) {
+                    if (c.getRank() != 0) {
+                        Element cardElement = doc.createElement("card");
+                        pileElement.appendChild(cardElement);
+                        Attr suitAttr = doc.createAttribute("suit");
+                        suitAttr.setValue(c.getSuit());
+                        Attr rankAttr = doc.createAttribute("rank");
+                        rankAttr.setValue(Integer.toString(c.getRank()));
+                        cardElement.setAttributeNode(suitAttr);
+                        cardElement.setAttributeNode(rankAttr);
+                    }
+                }
+            }
+
+            Element homecellsElement = doc.createElement("homecells");
+            savedGameElement.appendChild(homecellsElement);
+
+            for (Map.Entry<String, List<Card>> entry : homeCells.piles.entrySet()) {
+                Element pileElement = doc.createElement("pile");
+                homecellsElement.appendChild(pileElement);
+                Attr suitAttrH = doc.createAttribute("suit");
+                suitAttrH.setValue(entry.getKey());
+                pileElement.setAttributeNode(suitAttrH);
+
+                for (Card c : entry.getValue()) {
+                    if (c.getRank() != 0) {
+                        Element cardElement = doc.createElement("card");
+                        pileElement.appendChild(cardElement);
+                        Attr suitAttr = doc.createAttribute("suit");
+                        suitAttr.setValue(c.getSuit());
+                        Attr rankAttr = doc.createAttribute("rank");
+                        rankAttr.setValue(Integer.toString(c.getRank()));
+                        cardElement.setAttributeNode(suitAttr);
+                        cardElement.setAttributeNode(rankAttr);
+                    }
+                }
+            }
+
+            Element freeCellsElement = doc.createElement("freecells");
+            savedGameElement.appendChild(freeCellsElement);
+            for (Card c : freeCells.cards) {
+                Element cardElement = doc.createElement("card");
+                freeCellsElement.appendChild(cardElement);
+                Attr suitAttr = doc.createAttribute("suit");
+                suitAttr.setValue(c.getSuit());
+                Attr rankAttr = doc.createAttribute("rank");
+                rankAttr.setValue(Integer.toString(c.getRank()));
+                cardElement.setAttributeNode(suitAttr);
+                cardElement.setAttributeNode(rankAttr);
+            }
+
+            //creating the file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            String homeDir = System.getProperty("user.home");
+            boolean dir = new File(homeDir + "/.freecell").mkdir();
+            StreamResult result = new StreamResult(new File(homeDir + "/.freecell/" + "savedgame.xml"));
+            transformer.transform(source, result);
+
+        } catch (ParserConfigurationException ex) {
+            LOGGER.error(ex.getMessage());
+        } catch (TransformerConfigurationException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (TransformerException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void loadGame(String name) {
+
+        try {
+            String homeDir = System.getProperty("user.home");
+            File xmlFile = new File(homeDir + "/.freecell/" + "savedgame.xml");
+
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+
+            doc.getDocumentElement().normalize();
+
+            tableau = new ArrayList<>();
+            homeCells = new HomeCells();
+            freeCells = new FreeCells();
+
+            NodeList nlist = doc.getElementsByTagName("game");
+            for (int i = 0; i < nlist.getLength(); i++) {
+
+                Node game = nlist.item(i);
+                Element element = (Element) game;
+
+                String s = element.getAttributeNode("name").getValue();
+
+                if (s.equals(name)) {
+                    NodeList childNodes = element.getChildNodes();
+                    for (int index = 0; index < childNodes.getLength(); index++) {
+                        Node n = childNodes.item(index);
+                        //LOGGER.info(n.getNodeName());
+                        if (n.getNodeName().equals("tableau")) {
+                            Element pilesElement = (Element) n;
+                            NodeList piles = pilesElement.getElementsByTagName("pile");
+                            for (int p = 0; p < piles.getLength(); p++) {
+                                List<Card> pile = new ArrayList<>();
+                                for (int c = 0; c < piles.item(p).getChildNodes().getLength(); c++) {
+                                    Element card = (Element) piles.item(p).getChildNodes().item(c);
+                                    if (card.hasAttribute("suit") && card.hasAttribute("rank")) {
+                                        Card newCard = new Card(card.getAttribute("suit"),
+                                                Integer.parseInt(card.getAttribute("rank")));
+                                        pile.add(newCard);
+                                    }
+                                }
+                                tableau.add(pile);
+                            }
+                        } else if (n.getNodeName().equals("homecells")) {
+                            Element pilesElement = (Element) n;
+                            NodeList piles = pilesElement.getElementsByTagName("pile");
+
+                            for (int p = 0; p < piles.getLength(); p++) {
+                                List<Card> list = new ArrayList<>();
+
+                                Element pile = (Element) piles.item(p);
+
+                                for (int c = 0; c < pile.getChildNodes().getLength(); c++) {
+                                    Element card = (Element) pile.getChildNodes().item(c);
+                                    if (card.hasAttribute("suit") && card.hasAttribute("rank")) {
+                                        Card newCard = new Card(card.getAttribute("suit"),
+                                                Integer.parseInt(card.getAttribute("rank")));
+
+                                        list.add(newCard);
+                                    }
+                                }
+
+                                if (pile.getChildNodes().getLength() == 0) {
+                                    Card newCard = new Card(pile.getAttribute("suit"), 0);
+                                    list.add(newCard);
+                                }
+
+                                homeCells.piles.put(pile.getAttribute("suit"), list);
+                            }
+                        } else if (n.getNodeName().equals("freecells")) {
+                            //List<Card> list = new ArrayList<>();
+                            Element cardsElement = (Element) n;
+                            NodeList cards = cardsElement.getElementsByTagName("card");
+                            for (int c = 0; c < cards.getLength(); c++) {
+                                Element card = (Element) cards.item(c);
+                                //LOGGER.info(card.getAttribute("suit"));
+                                Card newCard = new Card(card.getAttribute("suit"),
+                                        Integer.parseInt(card.getAttribute("rank")));
+                                freeCells.cards.add(newCard);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            }
+
+        } catch (ParserConfigurationException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public List<String> getSavedGames() {
+        List<String> savedGames = new ArrayList<>();
+        try {
+            String homeDir = System.getProperty("user.home");
+            File xmlFile = new File(homeDir + "/.freecell/" + "savedgame.xml");
+
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+
+            doc.getDocumentElement().normalize();
+
+            NodeList nlist = doc.getElementsByTagName("game");
+
+            for (int i = 0; i < nlist.getLength(); i++) {
+                Node n = nlist.item(i);
+                Element element = (Element) n;
+                savedGames.add(element.getAttribute("name"));
+
+            }
+
+        } catch (ParserConfigurationException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return savedGames;
     }
 
     private boolean isTableauCard(Card card) {
@@ -295,236 +495,17 @@ public class Game implements GameI {
         return freeCells.cards.stream().anyMatch((c) -> (c.equals(card)));
     }
 
-    public void saveGame(String name) {
-        
-        try {
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.newDocument();
-            Element rootElement = doc.createElement("freecell");
-            doc.appendChild(rootElement);
-            
-            Element savedGameElement = doc.createElement("game");
-            rootElement.appendChild(savedGameElement);
-            Attr nameAttr = doc.createAttribute("name");
-            nameAttr.setValue(name);
-            savedGameElement.setAttributeNode(nameAttr);
-            
-            Element tableauElement = doc.createElement("tableau");
-            savedGameElement.appendChild(tableauElement);
-            
-            for(int i = 0; i < 8; i++){
-                Element pileElement = doc.createElement("pile");
-                tableauElement.appendChild(pileElement);
-                
-                for(Card c: tableau.get(i)){
-                    if(c.getRank() != 0){
-                        Element cardElement = doc.createElement("card");
-                        pileElement.appendChild(cardElement);
-                        Attr suitAttr = doc.createAttribute("suit");
-                        suitAttr.setValue(c.getSuit());
-                        Attr rankAttr = doc.createAttribute("rank");
-                        rankAttr.setValue(Integer.toString(c.getRank()));
-                        cardElement.setAttributeNode(suitAttr);
-                        cardElement.setAttributeNode(rankAttr);
-                    }
-                }
+    private boolean isHomeCellCard(Card c) {
+        return homeCells.piles.entrySet().stream().anyMatch((entry) -> (entry.getValue().get(entry.getValue().size() - 1).equals(c)));
+    }
+
+    private int getCardPileIndex(Card card) {
+        for (int i = 0; i < this.tableau.size(); i++) {
+            if (this.tableau.get(i).get(tableau.get(i).size() - 1).equals(card)) {
+                return i;
             }
-            
-            Element homecellsElement = doc.createElement("homecells");
-            savedGameElement.appendChild(homecellsElement);
-             
-                for (Map.Entry<String,List<Card>> entry : homeCells.piles.entrySet()) {
-                    Element pileElement = doc.createElement("pile");
-                     homecellsElement.appendChild(pileElement);
-                     Attr suitAttrH = doc.createAttribute("suit");
-                     suitAttrH.setValue(entry.getKey());
-                     pileElement.setAttributeNode(suitAttrH);
-                     
-                     for(Card c: entry.getValue()){
-                        if(c.getRank() != 0){
-                        Element cardElement = doc.createElement("card");
-                        pileElement.appendChild(cardElement);
-                        Attr suitAttr = doc.createAttribute("suit");
-                        suitAttr.setValue(c.getSuit());
-                        Attr rankAttr = doc.createAttribute("rank");
-                        rankAttr.setValue(Integer.toString(c.getRank()));
-                        cardElement.setAttributeNode(suitAttr);
-                        cardElement.setAttributeNode(rankAttr);
-                        }
-                     }
-                }
-                
-            Element freeCellsElement = doc.createElement("freecells");
-            savedGameElement.appendChild(freeCellsElement);
-            for(Card c: freeCells.cards){
-                 Element cardElement = doc.createElement("card");
-                 freeCellsElement.appendChild(cardElement);
-                 Attr suitAttr = doc.createAttribute("suit");
-                 suitAttr.setValue(c.getSuit());
-                 Attr rankAttr = doc.createAttribute("rank");
-                 rankAttr.setValue(Integer.toString(c.getRank()));
-                 cardElement.setAttributeNode(suitAttr);
-                 cardElement.setAttributeNode(rankAttr);
-            }
-            
-            
-            //creating the file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(doc);
-            String homeDir = System.getProperty("user.home");
-            boolean dir = new File(homeDir+"/.freecell").mkdir();
-            StreamResult result = new StreamResult(new File(homeDir+"/.freecell/"+"savedgame.xml"));
-            transformer.transform(source, result);
-            
-        } catch (ParserConfigurationException ex) {
-            LOGGER.error(ex.getMessage());
-        } catch (TransformerConfigurationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-    
-    public void LoadGame(String name){
-        
-        try {
-            String homeDir = System.getProperty("user.home");
-            File xmlFile = new File(homeDir+"/.freecell/"+"savedgame.xml");
-            
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xmlFile);
-            
-            doc.getDocumentElement().normalize();
-            
-             tableau = new ArrayList<>();
-             homeCells = new HomeCells();
-             freeCells = new FreeCells();
-             
-             NodeList nlist = doc.getElementsByTagName("game");
-             for(int i = 0; i < nlist.getLength(); i++){
-                 
-                 Node game = nlist.item(i);
-                 Element element = (Element) game;
-                 
-                 String s = element.getAttributeNode("name").getValue();
-                 
-                 if(s.equals(name)){
-                     NodeList childNodes = element.getChildNodes();
-                     for(int index = 0; index < childNodes.getLength(); index++){
-                         Node n = childNodes.item(index);
-                         //LOGGER.info(n.getNodeName());
-                         if(n.getNodeName().equals("tableau")){
-                             Element pilesElement = (Element) n;
-                             NodeList piles = pilesElement.getElementsByTagName("pile");
-                             for(int p = 0; p < piles.getLength(); p++){
-                                 List<Card> pile = new ArrayList<>();
-                                 for(int c = 0; c < piles.item(p).getChildNodes().getLength(); c++){
-                                     Element card = (Element) piles.item(p).getChildNodes().item(c);
-                                     if(card.hasAttribute("suit") && card.hasAttribute("rank")){
-                                         Card newCard = new Card(card.getAttribute("suit"),
-                                                                 Integer.parseInt(card.getAttribute("rank")));
-                                         pile.add(newCard);
-                                     }
-                                 }
-                                 tableau.add(pile);
-                             }
-                         }
-                         else if(n.getNodeName().equals("homecells")){
-                             Element pilesElement = (Element) n;
-                             NodeList piles = pilesElement.getElementsByTagName("pile");
-                             
-                             for(int p = 0; p < piles.getLength(); p++){
-                                 List<Card> list = new ArrayList<>();
-                                 
-                                 Element pile = (Element) piles.item(p);
-                                 
-                                 for(int c = 0; c < pile.getChildNodes().getLength(); c++){
-                                     Element card = (Element) pile.getChildNodes().item(c);
-                                     if(card.hasAttribute("suit") && card.hasAttribute("rank")){
-                                         Card newCard = new Card(card.getAttribute("suit"),
-                                                                 Integer.parseInt(card.getAttribute("rank")));
-                                         
-                                         list.add(newCard);
-                                     }
-                                 }
-                                 
-                                 if(pile.getChildNodes().getLength() == 0){
-                                     Card newCard = new Card(pile.getAttribute("suit"),0);
-                                     list.add(newCard);
-                                 }
-                                 
-                                 homeCells.piles.put(pile.getAttribute("suit"), list);
-                             }
-                         }
-                         else if(n.getNodeName().equals("freecells")){
-                             //List<Card> list = new ArrayList<>();
-                             Element cardsElement = (Element) n;
-                             NodeList cards = cardsElement.getElementsByTagName("card");
-                             for(int c = 0; c < cards.getLength(); c++){
-                                 Element card = (Element) cards.item(c);
-                                 //LOGGER.info(card.getAttribute("suit"));
-                                 Card newCard = new Card(card.getAttribute("suit"),
-                                 Integer.parseInt(card.getAttribute("rank")));
-                                 freeCells.cards.add(newCard);
-                                 
-                             }
-                             
-                             
-                         }
-                         
-                         
-                     }
-                     
-                     
-                 }
-             }
-            
-        
-             
-        } catch (ParserConfigurationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    
-    }
-    
-    public List<String> getSavedGames(){
-        List<String> savedGames = new ArrayList<>();
-         try {
-            String homeDir = System.getProperty("user.home");
-            File xmlFile = new File(homeDir+"/.freecell/"+"savedgame.xml");
-            
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(xmlFile);
-            
-            doc.getDocumentElement().normalize();
-            
-            NodeList nlist = doc.getElementsByTagName("game");
-            
-            for(int i = 0; i < nlist.getLength(); i++){
-                Node n = nlist.item(i);
-                    Element element = (Element) n;
-                    savedGames.add(element.getAttribute("name"));
-                
-                
-            }
-            
-        } catch (ParserConfigurationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        }
-         
-        return savedGames;
+        return -1;
     }
 }

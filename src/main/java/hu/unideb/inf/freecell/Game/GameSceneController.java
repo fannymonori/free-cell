@@ -72,7 +72,7 @@ public class GameSceneController implements Initializable {
 
     @FXML
     private MenuItem saveGameMenuItem;
-    
+
     @FXML
     private MenuItem loadGameMenuItem;
 
@@ -137,13 +137,13 @@ public class GameSceneController implements Initializable {
         for (String s_ : Arrays.asList("clubs", "diamonds", "hearts", "spades")) {
             suit.add(s_);
         }
-        
+
         //LOGGER.info(game.homeCells.piles.get("clubs").size()+"");
         for (int i = 0; i < 4; i++) {
             //LOGGER.info(game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size()-1).getRank()+"");
-            final HomeCellView hw = new HomeCellView(this.getClass().getResource("/images/" + suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size()-1).getRank() +".png").toString());
+            final HomeCellView hw = new HomeCellView(this.getClass().getResource("/images/" + suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank() + ".png").toString());
 
-            hw.setId(suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size()-1).getRank());
+            hw.setId(suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank());
             hw.setLayoutX(10 + (i * 120));
             hw.setLayoutY(30);
 
@@ -218,13 +218,11 @@ public class GameSceneController implements Initializable {
 
         //========================================================= 
         int numOfFreeCells = game.freeCells.cards.size();
-        
-        
+
         //LOGGER.info("freecell: "+game.freeCells.cards.size()+"");
-        
         for (int i = 0; i < numOfFreeCells; i++) {
-            
-            final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/" + game.freeCells.cards.get(i).getSuit() + "_" + game.freeCells.cards.get(i).getRank() +".png").toString());
+
+            final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/" + game.freeCells.cards.get(i).getSuit() + "_" + game.freeCells.cards.get(i).getRank() + ".png").toString());
 
             Image image = new Image(this.getClass().getResource("/images/card_background.jpg").toString());
             fv.setBackgroundImage(image);
@@ -247,9 +245,9 @@ public class GameSceneController implements Initializable {
 
             gameView.getChildren().add(fv);
         }
-        
+
         for (int i = numOfFreeCells; i < 4; i++) {
-            
+
             final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/card_background.jpg").toString());
 
             fv.setBackgroundImage(fv.getImage());
@@ -272,7 +270,7 @@ public class GameSceneController implements Initializable {
 
             gameView.getChildren().add(fv);
         }
-        
+
         GamePane.getChildren().add(gameView);
 
     }
@@ -448,15 +446,15 @@ public class GameSceneController implements Initializable {
         tn.initStyle(StageStyle.UTILITY);
 
         Optional<String> result = tn.showAndWait();
-        if(result.isPresent()){
+        if (result.isPresent()) {
             game.saveGame(result.get());
         }
         //result.ifPresent(name -> System.out.println("lel"));
 
     }
-    
+
     @FXML
-    public void onLoadGameMenuAction(ActionEvent event){
+    public void onLoadGameMenuAction(ActionEvent event) {
         LOGGER.info("Load game is pressed!");
         Stage stage = new Stage();
         stage.setAlwaysOnTop(true);
@@ -464,55 +462,54 @@ public class GameSceneController implements Initializable {
         stage.setY(300);
         stage.setWidth(400);
         stage.setHeight(300);
-        
+
         AnchorPane p = new AnchorPane();
         p.setPrefSize(400, 300);
         ListView<String> lv = new ListView();
-        
+
         lv.setPrefSize(220, 300);
         ObservableList<String> ob = FXCollections.observableArrayList();
         List<String> savedGames = game.getSavedGames();
-        for(String s : savedGames){
+        for (String s : savedGames) {
             //LOGGER.info(s);
             ob.add(s);
         }
         lv.setItems(ob);
-        
+
         Button button = new Button();
         button.setPrefSize(100, 30);
         button.setText("LoadGame");
         button.setLayoutX(280);
         button.setLayoutY(150);
-        
+
         button.setOnAction((ActionEvent event1) -> {
             game = new Game();
-            
+
             gameView.getChildren().clear();
-            
-            game.LoadGame(lv.getSelectionModel().getSelectedItem());
+
+            game.loadGame(lv.getSelectionModel().getSelectedItem());
             initView();
         });
-        
+
         p.getChildren().add(lv);
         p.getChildren().add(button);
         Scene sc = new Scene(p);
         stage.setScene(sc);
-        
+
         stage.show();
-        
-    
+
     }
 
     @FXML
-    public void onNewGameMenuAction(ActionEvent event){
-         gameView.getChildren().clear();
-         gameView = new GameView();
-         
-         game = new Game();
-         game.newGame();
-         initView();
+    public void onNewGameMenuAction(ActionEvent event) {
+        gameView.getChildren().clear();
+        gameView = new GameView();
+
+        game = new Game();
+        game.newGame();
+        initView();
     }
-    
+
     private class onDragDroppedFreeCell implements EventHandler<DragEvent> {
 
         private final FreeCellView fv;
@@ -523,24 +520,23 @@ public class GameSceneController implements Initializable {
 
         @Override
         public void handle(DragEvent event) {
-            
+
             if (event.getGestureSource().getClass().equals(CardView.class)) {
                 CardView source = (CardView) event.getGestureSource();
                 String[] content = source.getId().split("_");
                 String suit = content[0];
                 int rank = Integer.parseInt(content[1]);
                 Card sourceCard = new Card(suit, rank);
-                
+
                 if (game.addToFreeCell(sourceCard)) {
                     fv.setImage(source.getImage());
                     fv.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
-                    
+
                     gameView.getChildren().remove(source);
                 }
-                
+
                 event.setDropCompleted(true);
-                
-                //LOGGER.info("lol");
+
                 event.consume();
             }
         }
@@ -561,7 +557,7 @@ public class GameSceneController implements Initializable {
                 ClipboardContent cc = new ClipboardContent();
                 cc.putImage(fv.getImage());
                 db.setContent(cc);
-                
+
                 event.consume();
             }
         }
