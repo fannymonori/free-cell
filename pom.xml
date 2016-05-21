@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <name>FreeCell</name>
     <groupId>hu.unideb.freecell</groupId>
-    <artifactId>FreeCell</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>free-cell</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
     <description>

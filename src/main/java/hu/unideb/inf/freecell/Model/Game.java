@@ -114,7 +114,6 @@ public class Game implements GameI {
                 LOGGER.info("2");
                 return false;
             } else {
-
                 int targetIndex = getCardPileIndex(cardTarget);
                 int sourceIndex = getCardPileIndex(cardSource);
 
@@ -253,6 +252,12 @@ public class Game implements GameI {
         }
 
         return false;
+    }
+    
+    public boolean hasWon(){
+        boolean isHomeCellFull = false;
+        //if()
+        return isHomeCellFull;
     }
 
     @Override
@@ -480,6 +485,25 @@ public class Game implements GameI {
         return savedGames;
     }
 
+    public void setTableau(List<List<Card>> t){
+        tableau = new ArrayList<>();
+        for(List<Card> pile: t){
+            List<Card> p = new ArrayList<>();
+            pile.stream().forEach((c) -> {p.add(c);});
+            tableau.add(pile);
+        }
+    }
+    
+    public void setFreeCell(FreeCells f){
+        this.freeCells = new FreeCells();
+        this.freeCells.setPiles(f.getPiles());
+    }
+    
+    public void setHomeCell(HomeCells h){
+        this.homeCells = new HomeCells();
+        this.homeCells.setPiles(h.getPiles());
+    }
+    
     private boolean isTableauCard(Card card) {
         for (int i = 0; i < this.tableau.size(); i++) {
             for (int j = 0; j < this.tableau.get(i).size(); j++) {

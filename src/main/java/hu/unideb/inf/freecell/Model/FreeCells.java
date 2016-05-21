@@ -17,7 +17,6 @@ package hu.unideb.inf.freecell.Model;
 
 import java.util.ArrayList;
 import java.util.List;
-import javafx.scene.image.Image;
 
 /**
  *
@@ -30,4 +29,12 @@ public class FreeCells {
         cards = new ArrayList<>();
     }
     
+    public void setPiles(List<Card> cards){
+        this.cards = new ArrayList<>(cards);
+    }
+    
+    public List<Card> getPiles(){
+        List<Card> ret = new ArrayList<>(cards);
+        return ret;
+    }
 }

@@ -38,5 +38,14 @@ public class HomeCells{
             piles.put(s, p);
         }
     }
+    
+    public void setPiles(Map<String, List<Card>> piles){
+        this.piles = new HashMap<>(piles);
+    }
+    
+    public Map<String, List<Card>> getPiles(){
+        Map<String, List<Card>> ret = new HashMap<>(piles);
+        return ret;
+    }
 
 }
