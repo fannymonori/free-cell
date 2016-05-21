@@ -32,7 +32,6 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.*;
 import javax.xml.transform.stream.StreamResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -254,10 +253,13 @@ public class Game implements GameI {
         return false;
     }
     
+    @Override
     public boolean hasWon(){
-        boolean isHomeCellFull = false;
-        //if()
-        return isHomeCellFull;
+        if (!this.homeCells.piles.entrySet().stream().noneMatch((entry) -> (entry.getValue().size() < 14))) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
@@ -353,6 +355,7 @@ public class Game implements GameI {
 
     }
 
+    @Override
     public void loadGame(String name) {
 
         try {
@@ -443,12 +446,8 @@ public class Game implements GameI {
                 }
             }
 
-        } catch (ParserConfigurationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOGGER.error(ex.getMessage());
         }
 
     }
@@ -474,12 +473,8 @@ public class Game implements GameI {
 
             }
 
-        } catch (ParserConfigurationException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            java.util.logging.Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOGGER.info(ex.getMessage());
         }
 
         return savedGames;

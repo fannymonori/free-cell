@@ -23,8 +23,9 @@ public interface GameI {
     
     //public boolean addToTableau(Card card, int index);
     
+
     /**
-     * Kezdeti ertekek
+     * 
      */
     public void newGame();
     
@@ -32,11 +33,39 @@ public interface GameI {
     
     public void loadGame(String name);
     
+    /**
+     * 
+     * @param cardSource
+     * @param cardTarget
+     * @return 
+     */
     public boolean addToTableau(Card cardSource, Card cardTarget); 
     
+    /**
+     * 
+     * @param cardSource
+     * @param cardTarget
+     * @return 
+     */
     public boolean addToHomeCell(Card cardSource, Card cardTarget);
     
+    /**
+     * 
+     * @param cardSource
+     * @return 
+     */
     public boolean addToFreeCell(Card cardSource);
     
+    /**
+     * 
+     * @param card
+     * @return 
+     */
     public boolean isLast(Card card);
+    
+    /**
+     * 
+     * @return 
+     */
+    public boolean hasWon();
 }
