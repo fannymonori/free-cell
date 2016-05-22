@@ -18,9 +18,6 @@ public class StartSceneController implements Initializable {
     private Button StartSceneNewGameButton;
 
     @FXML
-    private Button StartSceneHighscoreButton;
-
-    @FXML
     private Button StartSceneExitButton;
 
     @FXML
@@ -35,6 +32,7 @@ public class StartSceneController implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.centerOnScreen();
+            stage.setResizable(false);
             stage.show();
         } else if (event.getSource() == StartSceneExitButton) {
             stage = (Stage) StartSceneNewGameButton.getScene().getWindow();
@@ -45,6 +43,5 @@ public class StartSceneController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
     }
 }

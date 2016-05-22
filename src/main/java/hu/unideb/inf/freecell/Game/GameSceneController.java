@@ -36,8 +36,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.input.ClipboardContent;
@@ -67,24 +65,11 @@ public class GameSceneController implements Initializable {
     @FXML
     private Pane GamePane;
 
-    @FXML
-    private MenuBar gameMenu;
-
-    @FXML
-    private MenuItem saveGameMenuItem;
-
-    @FXML
-    private MenuItem loadGameMenuItem;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        //GamePane.getChildren().add(new CardView());
         game = new Game();
-
         game.newGame();
-
         initView();
-
     }
 
     public void initView() {
@@ -103,33 +88,20 @@ public class GameSceneController implements Initializable {
 
         int it = 0;
         for (int i = 0; i < game.tableau.size(); i++) {
-            //List<CardView> p = new ArrayList<>();
             for (int j = 0; j < game.tableau.get(i).size(); j++) {
                 String path = "/images/" + game.tableau.get(i).get(j).getSuit() + "_" + game.tableau.get(i).get(j).getRank() + ".png";
-                //LOGGER.info(path);
                 final CardView cv = new CardView(this.getClass().getResource(path).toString());
-                //cv.setId(s.get(it));
                 cv.setId(game.tableau.get(i).get(j).getSuit() + "_" + game.tableau.get(i).get(j).getRank());
 
-                //if (j == (i < 4 ? 7 : 6) - 1) {
                 cv.setOnDragDetected(new onDragDetected(cv));
                 cv.setOnDragOver(new onDragOver());
                 cv.setOnDragDropped(new onDragDropped(cv));
-
-                //}
-                //cv.setOnMousePressed(new onMouseDragStartEventHandler(cv));
-                //cv.setOnMouseDragged(new onMouseDraggedEventHandler(cv));
                 cv.setLayoutX(20 + (i * 120));
                 cv.setLayoutY(250 + j * 20);
-                //p.add(cv);
                 gameView.getChildren().add(cv);
-                //gameView.getChildren().add(cv);
 
                 it++;
             }
-
-            //gameView.tableau.add(p);
-            //gameView.getChildren().add(p);
         }
         //===============================================================
         //initializing homecells
@@ -138,9 +110,7 @@ public class GameSceneController implements Initializable {
             suit.add(s_);
         }
 
-        //LOGGER.info(game.homeCells.piles.get("clubs").size()+"");
         for (int i = 0; i < 4; i++) {
-            //LOGGER.info(game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size()-1).getRank()+"");
             final HomeCellView hw = new HomeCellView(this.getClass().getResource("/images/" + suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank() + ".png").toString());
 
             hw.setId(suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank());
@@ -163,7 +133,6 @@ public class GameSceneController implements Initializable {
                         Card targetCard = new Card(suit, rank);
 
                         if (game.addToHomeCell(sourceCard, targetCard)) {
-                            // LOGGER.info("Valid Move!");
 
                             hw.setImage(source.getImage());
                             hw.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
@@ -173,7 +142,6 @@ public class GameSceneController implements Initializable {
 
                         event.setDropCompleted(true);
 
-                        //LOGGER.info("lel");
                     } else if (event.getGestureSource().getClass().equals(FreeCellView.class)) {
                         FreeCellView source = (FreeCellView) event.getGestureSource();
                         String[] content = source.getId().split("_");
@@ -186,18 +154,13 @@ public class GameSceneController implements Initializable {
                         Card targetCard = new Card(suit, rank);
 
                         if (game.addToHomeCell(sourceCard, targetCard)) {
-                            //LOGGER.info("Valid Move!");
 
                             hw.setImage(source.getImage());
                             hw.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
 
                             source.setImage(source.getBackgroundImage());
-                            //gameView.getChildren().remove(source);
                         }
-
                         event.setDropCompleted(true);
-
-                        //LOGGER.info("lel");
                     }
 
                     event.consume();
@@ -219,7 +182,6 @@ public class GameSceneController implements Initializable {
         //========================================================= 
         int numOfFreeCells = game.freeCells.cards.size();
 
-        //LOGGER.info("freecell: "+game.freeCells.cards.size()+"");
         for (int i = 0; i < numOfFreeCells; i++) {
 
             final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/" + game.freeCells.cards.get(i).getSuit() + "_" + game.freeCells.cards.get(i).getRank() + ".png").toString());
@@ -275,46 +237,6 @@ public class GameSceneController implements Initializable {
 
     }
 
-    /*private static class onMouseDragStartEventHandler implements EventHandler<MouseEvent> {
-
-        private final CardView cv;
-
-        public onMouseDragStartEventHandler(CardView cv) {
-            this.cv = cv;
-        }
-
-        @Override
-        public void handle(MouseEvent event) {
-            cv.setOrigX(cv.getX());
-            cv.setOrigY(cv.getY());
-
-            cv.setMouseDeltaX(event.getX() - cv.getX());
-            cv.setMouseDeltaY(event.getY() - cv.getY());
-
-            Clipboard cl = Clipboard.getSystemClipboard();
-            ClipboardContent content = new ClipboardContent();
-            content.putImage(cv.getImage());
-            cl.setContent(content);
-
-            event.consume();
-        }
-    }*/
- /*private static class onMouseDraggedEventHandler implements EventHandler<MouseEvent> {
-
-        private final CardView cv;
-
-        public onMouseDraggedEventHandler(CardView cv) {
-            this.cv = cv;
-        }
-
-        @Override
-        public void handle(MouseEvent event) {
-            cv.setX(event.getX() - cv.getMouseDeltaX());
-            cv.setY(event.getY() - cv.getMouseDeltaY());
-            cv.toFront();
-            event.consume();
-        }
-    }*/
     private class onDragDetected implements EventHandler<MouseEvent> {
 
         private final CardView cv;
@@ -339,9 +261,6 @@ public class GameSceneController implements Initializable {
                 db.setContent(cc);
             } else {
                 LOGGER.info("Invalid MOVE: dragged card is not last");
-                /*for(Pile p : game.tableau.piles){
-                    LOGGER.info(p.peekCard().toString());
-                }*/
             }
 
             event.consume();
@@ -370,7 +289,6 @@ public class GameSceneController implements Initializable {
 
         @Override
         public void handle(DragEvent event) {
-            //put card on the pile
             if (event.getGestureSource().getClass().equals(CardView.class)) {
                 CardView source = (CardView) event.getGestureSource();
                 String[] content = source.getId().split("_");
@@ -382,19 +300,13 @@ public class GameSceneController implements Initializable {
                 rank = Integer.parseInt(content[1]);
                 Card targetCard = new Card(suit, rank);
 
-                //LOGGER.info(suit + rank);
                 if (game.addToTableau(sourceCard, targetCard)) {
-                    //LOGGER.info("Valid Move!");
                     source.setLayoutX(cv.getLayoutX());
                     source.setLayoutY(cv.getLayoutY() + 20);
                     source.toFront();
-                    //gameView.removeFromTableauByID(source);
-                    //gameView.addToTableau(source, cv);
                 } else {
-                    //LOGGER.info("Move is not valid!");
                 }
             } else if (event.getGestureSource().getClass().equals(FreeCellView.class)) {
-                //LOGGER.info("frecell");
                 FreeCellView source = (FreeCellView) event.getGestureSource();
                 String[] content = source.getId().split("_");
                 String suit = content[0];
@@ -405,9 +317,7 @@ public class GameSceneController implements Initializable {
                 rank = Integer.parseInt(content[1]);
                 Card targetCard = new Card(suit, rank);
 
-                //LOGGER.info(suit + rank);
                 if (game.addToTableau(sourceCard, targetCard)) {
-                    // LOGGER.info("Valid Move!");
                     CardView newCv = new CardView();
                     newCv.setImage(source.getImage());
                     newCv.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
@@ -424,8 +334,6 @@ public class GameSceneController implements Initializable {
 
                     source.setImage(source.getBackgroundImage());
                     source.setId("0");
-                    //gameView.removeFromTableauByID(source);
-                    //gameView.addToTableau(source, cv);
                 } else {
                     LOGGER.info("Move is not valid!");
                 }
@@ -437,7 +345,6 @@ public class GameSceneController implements Initializable {
 
     @FXML
     public void onSaveGameMenuAction(ActionEvent event) {
-        //Popup popupWindow = new Popup();
         LOGGER.info("SaveGame pressed!");
 
         TextInputDialog tn = new TextInputDialog();
@@ -449,8 +356,6 @@ public class GameSceneController implements Initializable {
         if (result.isPresent()) {
             game.saveGame(result.get());
         }
-        //result.ifPresent(name -> System.out.println("lel"));
-
     }
 
     @FXML
@@ -471,7 +376,6 @@ public class GameSceneController implements Initializable {
         ObservableList<String> ob = FXCollections.observableArrayList();
         List<String> savedGames = game.getSavedGames();
         for (String s : savedGames) {
-            //LOGGER.info(s);
             ob.add(s);
         }
         lv.setItems(ob);
@@ -479,14 +383,12 @@ public class GameSceneController implements Initializable {
         Button button = new Button();
         button.setPrefSize(100, 30);
         button.setText("LoadGame");
-        button.setLayoutX(280);
-        button.setLayoutY(150);
+        button.setLayoutX(260);
+        button.setLayoutY(100);
 
         button.setOnAction((ActionEvent event1) -> {
             game = new Game();
-
             gameView.getChildren().clear();
-
             game.loadGame(lv.getSelectionModel().getSelectedItem());
             initView();
         });
@@ -495,7 +397,8 @@ public class GameSceneController implements Initializable {
         p.getChildren().add(button);
         Scene sc = new Scene(p);
         stage.setScene(sc);
-
+        stage.centerOnScreen();
+        stage.setResizable(false);
         stage.show();
 
     }
