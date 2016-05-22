@@ -23,15 +23,14 @@ import javafx.scene.image.ImageView;
  * @author fanny
  */
 public class HomeCellView extends ImageView {
-    
+
     public HomeCellView(String image) {
         String cssStyle = "-fx-border-color: black;\n"
                 + "-fx-border-width: 3;\n";
         this.setImage(new Image(image));
-        
+
         this.setFitWidth(100);
         this.setFitHeight(140);
-        //this.toBack();
     }
-    
+
 }

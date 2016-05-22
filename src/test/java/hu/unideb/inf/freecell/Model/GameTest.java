@@ -54,15 +54,15 @@ public class GameTest {
 
     @Before
     public void setUp() {
-        gameInstance = new Game();
+        gameInstance = new GameImpl();
 
-        gameInstance_case2 = new Game();
+        gameInstance_case2 = new GameImpl();
 
-        gameInstance_case3 = new Game();
+        gameInstance_case3 = new GameImpl();
 
-        gameInstance_case4 = new Game();
+        gameInstance_case4 = new GameImpl();
 
-        gameInstance_case5 = new Game();
+        gameInstance_case5 = new GameImpl();
 
         //test case 2
         tableau_case2 = new ArrayList<>();
@@ -154,7 +154,7 @@ public class GameTest {
         System.out.println("newGame");
 
         gameInstance.newGame();
-        assertEquals(8, gameInstance.tableau.size());
+        assertEquals(8, gameInstance.getTableau().size());
     }
 
     /**
@@ -168,10 +168,10 @@ public class GameTest {
 
         boolean success = gameInstance_case2.addToTableau(cardSource, cardTarget);
         assertEquals(true, success);
-        assertEquals("diamonds", gameInstance_case2.tableau.get(0).get(gameInstance_case2.tableau.get(0).size() - 1).getSuit());
-        assertEquals("spades", gameInstance_case2.tableau.get(1).get(gameInstance_case2.tableau.get(1).size() - 1).getSuit());
-        assertEquals(7, gameInstance_case2.tableau.get(0).get(gameInstance_case2.tableau.get(0).size() - 1).getRank());
-        assertEquals(12, gameInstance_case2.tableau.get(1).get(gameInstance_case2.tableau.get(1).size() - 1).getRank());
+        assertEquals("diamonds", gameInstance_case2.getTableau().get(0).get(gameInstance_case2.getTableau().get(0).size() - 1).getSuit());
+        assertEquals("spades", gameInstance_case2.getTableau().get(1).get(gameInstance_case2.getTableau().get(1).size() - 1).getSuit());
+        assertEquals(7, gameInstance_case2.getTableau().get(0).get(gameInstance_case2.getTableau().get(0).size() - 1).getRank());
+        assertEquals(12, gameInstance_case2.getTableau().get(1).get(gameInstance_case2.getTableau().get(1).size() - 1).getRank());
     }
 
     /**
@@ -182,14 +182,14 @@ public class GameTest {
         System.out.println("addToHomeCell");
 
         //heart 1(ace) from tableau to homecell
-        boolean success = gameInstance_case3.addToHomeCell(gameInstance_case3.tableau.get(0).get(gameInstance_case3.tableau.get(0).size() - 1),
-                gameInstance_case3.homeCells.piles.get("hearts").get(gameInstance_case3.homeCells.piles.get("hearts").size() - 1));
+        boolean success = gameInstance_case3.addToHomeCell(gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1),
+                gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1));
 
         assertEquals(true, success);
-        assertEquals("clubs", gameInstance_case3.tableau.get(0).get(gameInstance_case3.tableau.get(0).size() - 1).getSuit());
-        assertEquals("hearts", gameInstance_case3.homeCells.piles.get("hearts").get(gameInstance_case3.homeCells.piles.get("hearts").size() - 1).getSuit());
-        assertEquals(8, gameInstance_case3.tableau.get(0).get(gameInstance_case3.tableau.get(0).size() - 1).getRank());
-        assertEquals(1, gameInstance_case3.homeCells.piles.get("hearts").get(gameInstance_case3.homeCells.piles.get("hearts").size() - 1).getRank());
+        assertEquals("clubs", gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1).getSuit());
+        assertEquals("hearts", gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1).getSuit());
+        assertEquals(8, gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1).getRank());
+        assertEquals(1, gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1).getRank());
     }
 
     /**
@@ -199,12 +199,12 @@ public class GameTest {
     public void testAddToFreeCell() {
         System.out.println("addToFreeCell");
 
-        boolean success = gameInstance_case4.addToFreeCell(gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1));
+        boolean success = gameInstance_case4.addToFreeCell(gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1));
         assertEquals(true, success);
-        assertEquals("clubs", gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1).getSuit());
-        assertEquals("hearts", gameInstance_case4.freeCells.cards.get(0).getSuit());
-        assertEquals(1, gameInstance_case4.freeCells.cards.get(0).getRank());
-        assertEquals(8, gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1).getRank());
+        assertEquals("clubs", gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1).getSuit());
+        assertEquals("hearts", gameInstance_case4.getFreeCells().cards.get(0).getSuit());
+        assertEquals(1, gameInstance_case4.getFreeCells().cards.get(0).getRank());
+        assertEquals(8, gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1).getRank());
     }
 
     /**
@@ -214,7 +214,7 @@ public class GameTest {
     public void testIsLast() {
         System.out.println("isLast");
 
-        boolean success = gameInstance_case5.isLast(gameInstance_case4.tableau.get(0).get(gameInstance_case4.tableau.get(0).size() - 1));
+        boolean success = gameInstance_case5.isLast(gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1));
         assertEquals(true, success);
     }
 }

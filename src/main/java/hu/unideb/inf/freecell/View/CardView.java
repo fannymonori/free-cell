@@ -24,10 +24,10 @@ import javafx.scene.image.ImageView;
  */
 public class CardView extends ImageView {
 
-   ///private String imageURL;
+    ///private String imageURL;
     private Image image;
     //private String id;
-    
+
     private double mouseDeltaX;
     private double mouseDeltaY;
     private double origX;
@@ -45,40 +45,4 @@ public class CardView extends ImageView {
         this.setFitWidth(100);
         this.setFitHeight(140);
     }
-
-    public void setMouseDeltaX(double initialPositionX) {
-        this.mouseDeltaX = initialPositionX;
-    }
-
-    public void setMouseDeltaY(double initialPositionY) {
-        this.mouseDeltaY = initialPositionY;
-    }
-
-    public double getMouseDeltaX() {
-        return mouseDeltaX;
-    }
-
-    public double getMouseDeltaY() {
-        return mouseDeltaY;
-    }
-
-    public double getOrigX() {
-        return origX;
-    }
-
-    public double getOrigY() {
-        return origY;
-    }
-
-    public void setOrigX(double origX) {
-        this.origX = origX;
-    }
-
-    public void setOrigY(double origY) {
-        this.origY = origY;
-    }
-
-
-    
-    
 }

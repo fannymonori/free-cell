@@ -15,10 +15,7 @@
  */
 package hu.unideb.inf.freecell.View;
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.layout.Pane;
-import org.slf4j.*;
 
 /**
  *
@@ -26,39 +23,7 @@ import org.slf4j.*;
  */
 public class GameView extends Pane {
 
-    //public List<PileView> tableau;
-    public List<List<CardView>> tableau;
-
-    public List<HomeCellView> HomeCells;
-
-    public List<FreeCellView> FreeCells;
-
-    static Logger LOGGER = LoggerFactory.getLogger(GameView.class);
-
     public GameView() {
-        tableau = new ArrayList<>();
-        HomeCells = new ArrayList<>();
-        FreeCells = new ArrayList<>();
+
     }
-
-    /*public void removeFromTableauByID(CardView cardview) {
-        for (List<CardView> cvl : tableau) {
-            for (CardView cv : cvl) {
-                if (cardview.getId() == cv.getId()) {
-                    cvl.remove(cv);
-                }
-            }
-        }
-    }*/
-
-    /*public void addToTableau(CardView cardViewSource, CardView cardViewTarget) {
-        for (List<CardView> cvl : tableau) {
-            for (CardView cv : cvl) {
-                if(cv.getId() == cardViewTarget.getId()){
-                    cvl.add(cardViewSource);
-                }
-            }
-        }
-    }*/
-
 }

@@ -17,6 +17,7 @@ package hu.unideb.inf.freecell.Game;
 
 import hu.unideb.inf.freecell.Model.Card;
 import hu.unideb.inf.freecell.Model.Game;
+import hu.unideb.inf.freecell.Model.GameImpl;
 import hu.unideb.inf.freecell.View.CardView;
 import hu.unideb.inf.freecell.View.FreeCellView;
 import hu.unideb.inf.freecell.View.GameView;
@@ -28,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -62,52 +62,50 @@ import org.slf4j.*;
  * @author fanny
  */
 public class GameSceneController implements Initializable {
-    
+
     static Logger LOGGER = LoggerFactory.getLogger(GameSceneController.class);
-    
+
     private GameView gameView;
-    
+
     private Game game;
-    
+
     @FXML
     private Pane GamePane;
-    
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        game = new Game();
+        game = new GameImpl();
         game.newGame();
         initView();
     }
-    
+
     public void initView() {
         gameView = new GameView();
-        
+
         gameView.setPrefSize(1000, 600);
         gameView.setLayoutX(0);
         gameView.setLayoutY(30);
-        
+
         List<String> s = new ArrayList<>();
-        for (List<Card> p : game.tableau) {
-            for (Card c : p) {
+        game.getTableau().stream().forEach((p) -> {
+            p.stream().forEach((c) -> {
                 s.add(c.getSuit() + "_" + c.getRank());
-            }
-        }
-        
-        int it = 0;
-        for (int i = 0; i < game.tableau.size(); i++) {
-            for (int j = 0; j < game.tableau.get(i).size(); j++) {
-                String path = "/images/" + game.tableau.get(i).get(j).getSuit() + "_" + game.tableau.get(i).get(j).getRank() + ".png";
+            });
+        });
+
+        //initializing tableau
+        for (int i = 0; i < game.getTableau().size(); i++) {
+            for (int j = 0; j < game.getTableau().get(i).size(); j++) {
+                String path = "/images/" + game.getTableau().get(i).get(j).getSuit() + "_" + game.getTableau().get(i).get(j).getRank() + ".png";
                 final CardView cv = new CardView(this.getClass().getResource(path).toString());
-                cv.setId(game.tableau.get(i).get(j).getSuit() + "_" + game.tableau.get(i).get(j).getRank());
-                
+                cv.setId(game.getTableau().get(i).get(j).getSuit() + "_" + game.getTableau().get(i).get(j).getRank());
+
                 cv.setOnDragDetected(new onDragDetected(cv));
                 cv.setOnDragOver(new onDragOver());
                 cv.setOnDragDropped(new onDragDropped(cv));
                 cv.setLayoutX(20 + (i * 120));
                 cv.setLayoutY(250 + j * 20);
                 gameView.getChildren().add(cv);
-                
-                it++;
             }
         }
         //===============================================================
@@ -116,18 +114,18 @@ public class GameSceneController implements Initializable {
         for (String s_ : Arrays.asList("clubs", "diamonds", "hearts", "spades")) {
             suit.add(s_);
         }
-        
+
         for (int i = 0; i < 4; i++) {
-            final HomeCellView hw = new HomeCellView(this.getClass().getResource("/images/" + suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank() + ".png").toString());
-            
-            hw.setId(suit.get(i) + "_" + game.homeCells.piles.get(suit.get(i)).get(game.homeCells.piles.get(suit.get(i)).size() - 1).getRank());
+            final HomeCellView hw = new HomeCellView(this.getClass().getResource("/images/" + suit.get(i) + "_" + game.getHomeCells().piles.get(suit.get(i)).get(game.getHomeCells().piles.get(suit.get(i)).size() - 1).getRank() + ".png").toString());
+
+            hw.setId(suit.get(i) + "_" + game.getHomeCells().piles.get(suit.get(i)).get(game.getHomeCells().piles.get(suit.get(i)).size() - 1).getRank());
             hw.setLayoutX(10 + (i * 120));
             hw.setLayoutY(30);
-            
+
             hw.setOnDragDropped(new EventHandler<DragEvent>() {
                 @Override
                 public void handle(DragEvent event) {
-                    
+
                     if (event.getGestureSource().getClass().equals(CardView.class)) {
                         CardView source = (CardView) event.getGestureSource();
                         String[] content = source.getId().split("_");
@@ -138,17 +136,17 @@ public class GameSceneController implements Initializable {
                         suit = content[0];
                         rank = Integer.parseInt(content[1]);
                         Card targetCard = new Card(suit, rank);
-                        
+
                         if (game.addToHomeCell(sourceCard, targetCard)) {
-                            
+
                             hw.setImage(source.getImage());
                             hw.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
-                            
+
                             gameView.getChildren().remove(source);
                         }
-                        
+
                         event.setDropCompleted(true);
-                        
+
                     } else if (event.getGestureSource().getClass().equals(FreeCellView.class)) {
                         FreeCellView source = (FreeCellView) event.getGestureSource();
                         String[] content = source.getId().split("_");
@@ -159,32 +157,32 @@ public class GameSceneController implements Initializable {
                         suit = content[0];
                         rank = Integer.parseInt(content[1]);
                         Card targetCard = new Card(suit, rank);
-                        
+
                         if (game.addToHomeCell(sourceCard, targetCard)) {
-                            
+
                             hw.setImage(source.getImage());
                             hw.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
-                            
+
                             source.setImage(source.getBackgroundImage());
                         }
                         event.setDropCompleted(true);
                     }
-                    
+
                     if (game.hasWon()) {
                         Alert alert = new Alert(AlertType.INFORMATION);
                         alert.setTitle("Won Window");
                         alert.setHeaderText(null);
                         alert.setContentText("Congratulation! You have won!");
-                        
+
                         alert.showAndWait().ifPresent(response -> {
                             if (response == ButtonType.OK) {
                                 try {
                                     Stage stage = (Stage) GamePane.getScene().getWindow();
                                     Parent root = FXMLLoader.load(getClass().getResource("/fxml/StartScene.fxml"));
-                                    
+
                                     Scene scene = new Scene(root);
                                     scene.getStylesheets().add("/styles/Styles.css");
-                                    
+
                                     stage.setTitle("FreeCell");
                                     stage.setScene(scene);
                                     stage.setResizable(false);
@@ -196,12 +194,12 @@ public class GameSceneController implements Initializable {
                             }
                         });
                     }
-                    
+
                     event.consume();
                 }
-                
+
             });
-            
+
             hw.setOnDragOver(new EventHandler<DragEvent>() {
                 @Override
                 public void handle(DragEvent event) {
@@ -209,24 +207,24 @@ public class GameSceneController implements Initializable {
                     event.consume();
                 }
             });
-            
+
             gameView.getChildren().add(hw);
         }
 
         //========================================================= 
-        int numOfFreeCells = game.freeCells.cards.size();
-        
+        int numOfFreeCells = game.getFreeCells().cards.size();
+
         for (int i = 0; i < numOfFreeCells; i++) {
-            
-            final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/" + game.freeCells.cards.get(i).getSuit() + "_" + game.freeCells.cards.get(i).getRank() + ".png").toString());
-            
+
+            final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/" + game.getFreeCells().cards.get(i).getSuit() + "_" + game.getFreeCells().cards.get(i).getRank() + ".png").toString());
+
             Image image = new Image(this.getClass().getResource("/images/card_background.jpg").toString());
             fv.setBackgroundImage(image);
-            fv.setId(game.freeCells.cards.get(i).getSuit() + "_" + game.freeCells.cards.get(i).getRank());
-            
+            fv.setId(game.getFreeCells().cards.get(i).getSuit() + "_" + game.getFreeCells().cards.get(i).getRank());
+
             fv.setLayoutX(490 + (i * 120));
             fv.setLayoutY(30);
-            
+
             fv.setOnDragOver(new EventHandler<DragEvent>() {
                 @Override
                 public void handle(DragEvent event) {
@@ -234,24 +232,24 @@ public class GameSceneController implements Initializable {
                     event.consume();
                 }
             });
-            
+
             fv.setOnDragDropped(new onDragDroppedFreeCell(fv));
-            
+
             fv.setOnDragDetected(new onDragDetectedFreeCell(fv));
-            
+
             gameView.getChildren().add(fv);
         }
-        
+
         for (int i = numOfFreeCells; i < 4; i++) {
-            
+
             final FreeCellView fv = new FreeCellView(this.getClass().getResource("/images/card_background.jpg").toString());
-            
+
             fv.setBackgroundImage(fv.getImage());
             fv.setId("0");
-            
+
             fv.setLayoutX(490 + (i * 120));
             fv.setLayoutY(30);
-            
+
             fv.setOnDragOver(new EventHandler<DragEvent>() {
                 @Override
                 public void handle(DragEvent event) {
@@ -259,33 +257,33 @@ public class GameSceneController implements Initializable {
                     event.consume();
                 }
             });
-            
+
             fv.setOnDragDropped(new onDragDroppedFreeCell(fv));
-            
+
             fv.setOnDragDetected(new onDragDetectedFreeCell(fv));
-            
+
             gameView.getChildren().add(fv);
         }
-        
+
         GamePane.getChildren().add(gameView);
-        
+
     }
-    
+
     private class onDragDetected implements EventHandler<MouseEvent> {
-        
+
         private final CardView cv;
-        
+
         public onDragDetected(CardView cv) {
             this.cv = cv;
         }
-        
+
         @Override
         public void handle(MouseEvent event) {
             String[] content = cv.getId().split("_");
             String suit = content[0];
             int rank = Integer.parseInt(content[1]);
             Card sourceCard = new Card(suit, rank);
-            
+
             if (game.isLast(sourceCard)) {
                 Dragboard db = cv.startDragAndDrop(TransferMode.MOVE);
                 ClipboardContent cc = new ClipboardContent();
@@ -296,31 +294,31 @@ public class GameSceneController implements Initializable {
             } else {
                 LOGGER.info("Invalid MOVE: dragged card is not last");
             }
-            
+
             event.consume();
         }
     }
-    
+
     private static class onDragOver implements EventHandler<DragEvent> {
-        
+
         public onDragOver() {
         }
-        
+
         @Override
         public void handle(DragEvent event) {
             event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
             event.consume();
         }
     }
-    
+
     private class onDragDropped implements EventHandler<DragEvent> {
-        
+
         private final CardView cv;
-        
+
         public onDragDropped(CardView cv) {
             this.cv = cv;
         }
-        
+
         @Override
         public void handle(DragEvent event) {
             if (event.getGestureSource().getClass().equals(CardView.class)) {
@@ -333,7 +331,7 @@ public class GameSceneController implements Initializable {
                 suit = content[0];
                 rank = Integer.parseInt(content[1]);
                 Card targetCard = new Card(suit, rank);
-                
+
                 if (game.addToTableau(sourceCard, targetCard)) {
                     source.setLayoutX(cv.getLayoutX());
                     source.setLayoutY(cv.getLayoutY() + 20);
@@ -350,7 +348,7 @@ public class GameSceneController implements Initializable {
                 suit = content[0];
                 rank = Integer.parseInt(content[1]);
                 Card targetCard = new Card(suit, rank);
-                
+
                 if (game.addToTableau(sourceCard, targetCard)) {
                     CardView newCv = new CardView();
                     newCv.setImage(source.getImage());
@@ -363,35 +361,35 @@ public class GameSceneController implements Initializable {
                     newCv.setOnDragDetected(new onDragDetected(newCv));
                     newCv.setOnDragOver(new onDragOver());
                     newCv.setOnDragDropped(new onDragDropped(newCv));
-                    
+
                     gameView.getChildren().add(newCv);
-                    
+
                     source.setImage(source.getBackgroundImage());
                     source.setId("0");
                 } else {
                     LOGGER.info("Move is not valid!");
                 }
             }
-            
+
             event.consume();
         }
     }
-    
+
     @FXML
     public void onSaveGameMenuAction(ActionEvent event) {
         LOGGER.info("SaveGame pressed!");
-        
+
         TextInputDialog tn = new TextInputDialog();
         tn.setTitle("Saving game");
         tn.setContentText("Please add a name to your game:");
         tn.initStyle(StageStyle.UTILITY);
-        
+
         Optional<String> result = tn.showAndWait();
         if (result.isPresent()) {
             game.saveGame(result.get());
         }
     }
-    
+
     @FXML
     public void onLoadGameMenuAction(ActionEvent event) {
         LOGGER.info("Load game is pressed!");
@@ -399,11 +397,11 @@ public class GameSceneController implements Initializable {
         stage.setAlwaysOnTop(true);
         stage.setWidth(400);
         stage.setHeight(300);
-        
+
         AnchorPane p = new AnchorPane();
         p.setPrefSize(400, 300);
         ListView<String> lv = new ListView();
-        
+
         lv.setPrefSize(220, 300);
         ObservableList<String> ob = FXCollections.observableArrayList();
         List<String> savedGames = game.getSavedGames();
@@ -411,20 +409,20 @@ public class GameSceneController implements Initializable {
             ob.add(s);
         }
         lv.setItems(ob);
-        
+
         Button button = new Button();
         button.setPrefSize(100, 30);
         button.setText("LoadGame");
         button.setLayoutX(260);
         button.setLayoutY(100);
-        
+
         button.setOnAction((ActionEvent event1) -> {
-            game = new Game();
+            game = new GameImpl();
             gameView.getChildren().clear();
             game.loadGame(lv.getSelectionModel().getSelectedItem());
             initView();
         });
-        
+
         p.getChildren().add(lv);
         p.getChildren().add(button);
         Scene sc = new Scene(p);
@@ -432,59 +430,59 @@ public class GameSceneController implements Initializable {
         stage.centerOnScreen();
         stage.setResizable(false);
         stage.show();
-        
+
     }
-    
+
     @FXML
     public void onNewGameMenuAction(ActionEvent event) {
         gameView.getChildren().clear();
         gameView = new GameView();
-        
-        game = new Game();
+
+        game = new GameImpl();
         game.newGame();
         initView();
     }
-    
+
     private class onDragDroppedFreeCell implements EventHandler<DragEvent> {
-        
+
         private final FreeCellView fv;
-        
+
         public onDragDroppedFreeCell(FreeCellView fv) {
             this.fv = fv;
         }
-        
+
         @Override
         public void handle(DragEvent event) {
-            
+
             if (event.getGestureSource().getClass().equals(CardView.class)) {
                 CardView source = (CardView) event.getGestureSource();
                 String[] content = source.getId().split("_");
                 String suit = content[0];
                 int rank = Integer.parseInt(content[1]);
                 Card sourceCard = new Card(suit, rank);
-                
+
                 if (game.addToFreeCell(sourceCard)) {
                     fv.setImage(source.getImage());
                     fv.setId(sourceCard.getSuit() + "_" + sourceCard.getRank());
-                    
+
                     gameView.getChildren().remove(source);
                 }
-                
+
                 event.setDropCompleted(true);
-                
+
                 event.consume();
             }
         }
     }
-    
+
     private static class onDragDetectedFreeCell implements EventHandler<MouseEvent> {
-        
+
         private final FreeCellView fv;
-        
+
         public onDragDetectedFreeCell(FreeCellView fv) {
             this.fv = fv;
         }
-        
+
         @Override
         public void handle(MouseEvent event) {
             if (!fv.getId().equals("0")) {
@@ -492,10 +490,10 @@ public class GameSceneController implements Initializable {
                 ClipboardContent cc = new ClipboardContent();
                 cc.putImage(fv.getImage());
                 db.setContent(cc);
-                
+
                 event.consume();
             }
         }
     }
-    
+
 }

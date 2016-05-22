@@ -123,7 +123,7 @@ public class GameDAOImpl implements GameDAO {
                 Element pileElement = doc.createElement("pile");
                 tableauElement.appendChild(pileElement);
 
-                for (Card c : game.tableau.get(i)) {
+                for (Card c : game.getTableau().get(i)) {
                     if (c.getRank() != 0) {
                         Element cardElement = doc.createElement("card");
                         pileElement.appendChild(cardElement);
@@ -141,7 +141,7 @@ public class GameDAOImpl implements GameDAO {
             Element homecellsElement = doc.createElement("homecells");
             savedGameElement.appendChild(homecellsElement);
 
-            for (Map.Entry<String, List<Card>> entry : game.homeCells.piles.entrySet()) {
+            for (Map.Entry<String, List<Card>> entry : game.getHomeCells().piles.entrySet()) {
                 Element pileElement = doc.createElement("pile");
                 homecellsElement.appendChild(pileElement);
                 Attr suitAttrH = doc.createAttribute("suit");
@@ -165,7 +165,7 @@ public class GameDAOImpl implements GameDAO {
             //saving freecells
             Element freeCellsElement = doc.createElement("freecells");
             savedGameElement.appendChild(freeCellsElement);
-            for (Card c : game.freeCells.cards) {
+            for (Card c : game.getFreeCells().cards) {
                 Element cardElement = doc.createElement("card");
                 freeCellsElement.appendChild(cardElement);
                 Attr suitAttr = doc.createAttribute("suit");
@@ -209,9 +209,13 @@ public class GameDAOImpl implements GameDAO {
 
             doc.getDocumentElement().normalize();
 
-            game.tableau = new ArrayList<>();
-            game.homeCells = new HomeCells();
-            game.freeCells = new FreeCells();
+//            game.tableau = new ArrayList<>();
+//            game.homeCells = new HomeCells();
+//            game.freeCells = new FreeCells();
+
+            List<List<Card>> tableau = new ArrayList<>();
+            HomeCells homeCells = new HomeCells();
+            FreeCells freeCells = new FreeCells();
 
             NodeList nlist = doc.getElementsByTagName("game");
             for (int i = 0; i < nlist.getLength(); i++) {
@@ -239,7 +243,7 @@ public class GameDAOImpl implements GameDAO {
                                         pile.add(newCard);
                                     }
                                 }
-                                game.tableau.add(pile);
+                                tableau.add(pile);
                             }
                         } else if (n.getNodeName().equals("homecells")) {
                             Element pilesElement = (Element) n;
@@ -265,7 +269,7 @@ public class GameDAOImpl implements GameDAO {
                                     list.add(newCard);
                                 }
 
-                                game.homeCells.piles.put(pile.getAttribute("suit"), list);
+                                homeCells.piles.put(pile.getAttribute("suit"), list);
                             }
                         } else if (n.getNodeName().equals("freecells")) {
                             Element cardsElement = (Element) n;
@@ -274,7 +278,7 @@ public class GameDAOImpl implements GameDAO {
                                 Element card = (Element) cards.item(c);
                                 Card newCard = new Card(card.getAttribute("suit"),
                                         Integer.parseInt(card.getAttribute("rank")));
-                                game.freeCells.cards.add(newCard);
+                                freeCells.cards.add(newCard);
 
                             }
 
@@ -284,6 +288,10 @@ public class GameDAOImpl implements GameDAO {
 
                 }
             }
+            
+            game.setTableau(tableau);
+            game.setFreeCell(freeCells);
+            game.setHomeCell(homeCells);
 
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             java.util.logging.Logger.getLogger(GameDAOImpl.class.getName()).log(Level.SEVERE, null, ex);

@@ -22,19 +22,19 @@ import javafx.scene.image.ImageView;
  *
  * @author fanny
  */
-public class FreeCellView extends ImageView{
-    
+public class FreeCellView extends ImageView {
+
     public Image backgroundImage;
 
     public FreeCellView(String image) {
-        
+
         String cssStyle = "-fx-border-color: black;\n"
                 + "-fx-border-width: 3;\n";
         this.setImage(new Image(image));
-        
+
         this.setFitWidth(100);
         this.setFitHeight(140);
-        
+
     }
 
     public void setBackgroundImage(Image backgroundImage) {
@@ -44,5 +44,5 @@ public class FreeCellView extends ImageView{
     public Image getBackgroundImage() {
         return backgroundImage;
     }
-    
+
 }
