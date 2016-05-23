@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +58,8 @@ public class GameDAOImpl implements GameDAO {
 
     @Override
     public List<String> getSavedGames() {
+        LOGGER.info("Getting saved games!");
+        
         List<String> savedGames = new ArrayList<>();
         try {
             File freecellDir = new File(pathHome);
@@ -123,7 +125,7 @@ public class GameDAOImpl implements GameDAO {
                 Element pileElement = doc.createElement("pile");
                 tableauElement.appendChild(pileElement);
 
-                for (Card c : game.getTableau().get(i)) {
+                for (Card c : game.getTableau().getPiles().get(i)) {
                     if (c.getRank() != 0) {
                         Element cardElement = doc.createElement("card");
                         pileElement.appendChild(cardElement);
@@ -199,7 +201,7 @@ public class GameDAOImpl implements GameDAO {
     @Override
     public void loadGame(Game game, String name) {
         LOGGER.info("Loading game: " + name + "...");
-        
+
         try {
 
             File xmlFile = new File(pathHome + name + ".xml");
@@ -209,11 +211,7 @@ public class GameDAOImpl implements GameDAO {
 
             doc.getDocumentElement().normalize();
 
-//            game.tableau = new ArrayList<>();
-//            game.homeCells = new HomeCells();
-//            game.freeCells = new FreeCells();
-
-            List<List<Card>> tableau = new ArrayList<>();
+            Tableau tableau = new Tableau();
             HomeCells homeCells = new HomeCells();
             FreeCells freeCells = new FreeCells();
 
@@ -243,7 +241,7 @@ public class GameDAOImpl implements GameDAO {
                                         pile.add(newCard);
                                     }
                                 }
-                                tableau.add(pile);
+                                tableau.piles.add(pile);
                             }
                         } else if (n.getNodeName().equals("homecells")) {
                             Element pilesElement = (Element) n;
@@ -288,7 +286,7 @@ public class GameDAOImpl implements GameDAO {
 
                 }
             }
-            
+
             game.setTableau(tableau);
             game.setFreeCell(freeCells);
             game.setHomeCell(homeCells);

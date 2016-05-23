@@ -13,20 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
+import hu.unideb.inf.freecell.model.HomeCells;
+import hu.unideb.inf.freecell.model.FreeCells;
+import hu.unideb.inf.freecell.model.Game;
+import hu.unideb.inf.freecell.model.Card;
+import hu.unideb.inf.freecell.model.GameImpl;
+import hu.unideb.inf.freecell.model.Tableau;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author fanny
  */
 public class GameTest {
+    
+    static Logger LOGGER = LoggerFactory.getLogger(GameTest.class);
 
     private Game gameInstance;
     private Game gameInstance_case2;
@@ -34,10 +44,10 @@ public class GameTest {
     private Game gameInstance_case4;
     private Game gameInstance_case5;
 
-    private List<List<Card>> tableau_case2;
-    private List<List<Card>> tableau_case3;
-    private List<List<Card>> tableau_case4;
-    private List<List<Card>> tableau_case5;
+    private Tableau tableau_case2;
+    private Tableau tableau_case3;
+    private Tableau tableau_case4;
+    private Tableau tableau_case5;
 
     private FreeCells frecell_case2;
     private FreeCells frecell_case3;
@@ -65,16 +75,16 @@ public class GameTest {
         gameInstance_case5 = new GameImpl();
 
         //test case 2
-        tableau_case2 = new ArrayList<>();
+        tableau_case2 = new Tableau();
         List<Card> pile = new ArrayList<>();
         pile.add(new Card("hearts", 10));
         pile.add(new Card("clubs", 8));
-        tableau_case2.add(pile);
+        tableau_case2.piles.add(pile);
 
         List<Card> pile2 = new ArrayList<>();
         pile2.add(new Card("spades", 12));
         pile2.add(new Card("diamonds", 7));
-        tableau_case2.add(pile2);
+        tableau_case2.piles.add(pile2);
 
         frecell_case2 = new FreeCells();
         homecell_case2 = new HomeCells();
@@ -84,16 +94,16 @@ public class GameTest {
         gameInstance_case2.setTableau(tableau_case2);
 
         //test case 3
-        tableau_case3 = new ArrayList<>();
+        tableau_case3 = new Tableau();
         List<Card> pile_case3_1 = new ArrayList<>();
         pile_case3_1.add(new Card("clubs", 8));
         pile_case3_1.add(new Card("hearts", 1));
-        tableau_case3.add(pile_case3_1);
+        tableau_case3.piles.add(pile_case3_1);
 
         List<Card> pile_case3_2 = new ArrayList<>();
         pile_case3_2.add(new Card("spades", 12));
         pile_case3_2.add(new Card("hearts", 2));
-        tableau_case3.add(pile_case3_2);
+        tableau_case3.piles.add(pile_case3_2);
 
         frecell_case3 = new FreeCells();
         homecell_case3 = new HomeCells();
@@ -103,16 +113,16 @@ public class GameTest {
         gameInstance_case3.setTableau(tableau_case3);
 
         //test case 4
-        tableau_case4 = new ArrayList<>();
+        tableau_case4 = new Tableau();
         List<Card> pile_case4_1 = new ArrayList<>();
         pile_case4_1.add(new Card("clubs", 8));
         pile_case4_1.add(new Card("hearts", 1));
-        tableau_case4.add(pile_case4_1);
+        tableau_case4.piles.add(pile_case4_1);
 
         List<Card> pile_case4_2 = new ArrayList<>();
         pile_case4_2.add(new Card("spades", 12));
         pile_case4_2.add(new Card("hearts", 2));
-        tableau_case4.add(pile_case4_2);
+        tableau_case4.piles.add(pile_case4_2);
 
         frecell_case4 = new FreeCells();
         homecell_case4 = new HomeCells();
@@ -122,16 +132,16 @@ public class GameTest {
         gameInstance_case4.setTableau(tableau_case4);
 
         //test case 5
-        tableau_case5 = new ArrayList<>();
+        tableau_case5 = new Tableau();
         List<Card> pile_case5_1 = new ArrayList<>();
         pile_case5_1.add(new Card("clubs", 8));
         pile_case5_1.add(new Card("hearts", 1));
-        tableau_case5.add(pile_case5_1);
+        tableau_case5.piles.add(pile_case5_1);
 
         List<Card> pile_case5_2 = new ArrayList<>();
         pile_case5_2.add(new Card("spades", 12));
         pile_case5_2.add(new Card("hearts", 2));
-        tableau_case5.add(pile_case5_2);
+        tableau_case5.piles.add(pile_case5_2);
 
         frecell_case5 = new FreeCells();
         homecell_case5 = new HomeCells();
@@ -151,10 +161,10 @@ public class GameTest {
      */
     @Test
     public void testNewGame() {
-        System.out.println("newGame");
+        LOGGER.info("newGame");
 
         gameInstance.newGame();
-        assertEquals(8, gameInstance.getTableau().size());
+        assertEquals(8, gameInstance.getTableau().getPiles().size());
     }
 
     /**
@@ -162,16 +172,16 @@ public class GameTest {
      */
     @Test
     public void testAddToTableau() {
-        System.out.println("addToTableau");
+        LOGGER.info("addToTableau");
         Card cardSource = new Card("diamonds", 7);
         Card cardTarget = new Card("clubs", 8);
 
         boolean success = gameInstance_case2.addToTableau(cardSource, cardTarget);
         assertEquals(true, success);
-        assertEquals("diamonds", gameInstance_case2.getTableau().get(0).get(gameInstance_case2.getTableau().get(0).size() - 1).getSuit());
-        assertEquals("spades", gameInstance_case2.getTableau().get(1).get(gameInstance_case2.getTableau().get(1).size() - 1).getSuit());
-        assertEquals(7, gameInstance_case2.getTableau().get(0).get(gameInstance_case2.getTableau().get(0).size() - 1).getRank());
-        assertEquals(12, gameInstance_case2.getTableau().get(1).get(gameInstance_case2.getTableau().get(1).size() - 1).getRank());
+        assertEquals("diamonds", gameInstance_case2.getTableau().getPiles().get(0).get(gameInstance_case2.getTableau().getPiles().get(0).size() - 1).getSuit());
+        assertEquals("spades", gameInstance_case2.getTableau().getPiles().get(1).get(gameInstance_case2.getTableau().getPiles().get(1).size() - 1).getSuit());
+        assertEquals(7, gameInstance_case2.getTableau().getPiles().get(0).get(gameInstance_case2.getTableau().getPiles().get(0).size() - 1).getRank());
+        assertEquals(12, gameInstance_case2.getTableau().getPiles().get(1).get(gameInstance_case2.getTableau().getPiles().get(1).size() - 1).getRank());
     }
 
     /**
@@ -179,16 +189,16 @@ public class GameTest {
      */
     @Test
     public void testAddToHomeCell() {
-        System.out.println("addToHomeCell");
+        LOGGER.info("addToHomeCell");
 
         //heart 1(ace) from tableau to homecell
-        boolean success = gameInstance_case3.addToHomeCell(gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1),
+        boolean success = gameInstance_case3.addToHomeCell(gameInstance_case3.getTableau().getPiles().get(0).get(gameInstance_case3.getTableau().getPiles().get(0).size() - 1),
                 gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1));
 
         assertEquals(true, success);
-        assertEquals("clubs", gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1).getSuit());
+        assertEquals("clubs", gameInstance_case3.getTableau().getPiles().get(0).get(gameInstance_case3.getTableau().getPiles().get(0).size() - 1).getSuit());
         assertEquals("hearts", gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1).getSuit());
-        assertEquals(8, gameInstance_case3.getTableau().get(0).get(gameInstance_case3.getTableau().get(0).size() - 1).getRank());
+        assertEquals(8, gameInstance_case3.getTableau().getPiles().get(0).get(gameInstance_case3.getTableau().getPiles().get(0).size() - 1).getRank());
         assertEquals(1, gameInstance_case3.getHomeCells().piles.get("hearts").get(gameInstance_case3.getHomeCells().piles.get("hearts").size() - 1).getRank());
     }
 
@@ -197,14 +207,14 @@ public class GameTest {
      */
     @Test
     public void testAddToFreeCell() {
-        System.out.println("addToFreeCell");
+        LOGGER.info("addToFreeCell");
 
-        boolean success = gameInstance_case4.addToFreeCell(gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1));
+        boolean success = gameInstance_case4.addToFreeCell(gameInstance_case4.getTableau().getPiles().get(0).get(gameInstance_case4.getTableau().getPiles().get(0).size() - 1));
         assertEquals(true, success);
-        assertEquals("clubs", gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1).getSuit());
+        assertEquals("clubs", gameInstance_case4.getTableau().getPiles().get(0).get(gameInstance_case4.getTableau().getPiles().get(0).size() - 1).getSuit());
         assertEquals("hearts", gameInstance_case4.getFreeCells().cards.get(0).getSuit());
         assertEquals(1, gameInstance_case4.getFreeCells().cards.get(0).getRank());
-        assertEquals(8, gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1).getRank());
+        assertEquals(8, gameInstance_case4.getTableau().getPiles().get(0).get(gameInstance_case4.getTableau().getPiles().get(0).size() - 1).getRank());
     }
 
     /**
@@ -212,9 +222,9 @@ public class GameTest {
      */
     @Test
     public void testIsLast() {
-        System.out.println("isLast");
+        LOGGER.info("isLast");
 
-        boolean success = gameInstance_case5.isLast(gameInstance_case4.getTableau().get(0).get(gameInstance_case4.getTableau().get(0).size() - 1));
+        boolean success = gameInstance_case5.isLast(gameInstance_case4.getTableau().getPiles().get(0).get(gameInstance_case4.getTableau().getPiles().get(0).size() - 1));
         assertEquals(true, success);
     }
 }

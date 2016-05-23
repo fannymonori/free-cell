@@ -15,3 +15,10 @@ mvn compile
 --------
 - mvn package
 - java -jar target/free-cell-1.0-jar-with-dependencies.jar
+
+**Run**
+--------
+Card design (under Public Domain License):
+http://opengameart.org/content/playing-cards-vector-png
+Background:
+http://wallpapercave.com/w/L138LQm

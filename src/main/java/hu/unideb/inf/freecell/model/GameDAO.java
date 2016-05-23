@@ -13,33 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author fanny
  */
-public class Tableau {
-    
-    public List<List<Card>> piles;
+public interface GameDAO {
 
-    public Tableau() {
-    }
+    /**
+     *
+     * @param game
+     * @param name
+     */
+    public void saveGame(Game game, String name);
 
-    public Tableau(List<List<Card>> piles) {
-        this.piles = new ArrayList<>(piles);
-    }
+    /**
+     *
+     * @param game
+     * @param name
+     */
+    public void loadGame(Game game, String name);
 
-    public List<List<Card>> getPiles() {
-        List<List<Card>> piles_ = new ArrayList<>(this.piles);
-        return piles_;
-    }
-
-    public void setPiles(List<List<Card>> piles) {
-        this.piles = new ArrayList<>(piles);
-    }
-    
+    /**
+     *
+     * @return
+     */
+    public List<String> getSavedGames();
 }

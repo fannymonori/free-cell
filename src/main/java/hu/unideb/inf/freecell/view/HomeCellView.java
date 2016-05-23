@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.View;
+package hu.unideb.inf.freecell.view;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,27 +22,15 @@ import javafx.scene.image.ImageView;
  *
  * @author fanny
  */
-public class CardView extends ImageView {
+public class HomeCellView extends ImageView {
 
-    ///private String imageURL;
-    private Image image;
-    //private String id;
+    public HomeCellView(String image) {
+        String cssStyle = "-fx-border-color: black;\n"
+                + "-fx-border-width: 3;\n";
+        this.setImage(new Image(image));
 
-    private double mouseDeltaX;
-    private double mouseDeltaY;
-    private double origX;
-    private double origY;
-
-    public CardView() {
-
-    }
-
-    public CardView(String image) {
-        //imageURL = image;
-        //this.setImage(image);
-        this.image = new Image(image);
-        this.setImage(this.image);
         this.setFitWidth(100);
         this.setFitHeight(140);
     }
+
 }

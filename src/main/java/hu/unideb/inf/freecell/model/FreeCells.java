@@ -13,17 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.View;
+package hu.unideb.inf.freecell.model;
 
-import javafx.scene.layout.Pane;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author fanny
  */
-public class GameView extends Pane {
+public class FreeCells {
+    public List<Card> cards; //max 4 elem
 
-    public GameView() {
-
+    public FreeCells() {
+        cards = new ArrayList<>();
+    }
+    
+    public void setPiles(List<Card> cards){
+        this.cards = new ArrayList<>(cards);
+    }
+    
+    public List<Card> getPiles(){
+        List<Card> ret = new ArrayList<>(cards);
+        return ret;
     }
 }

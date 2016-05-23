@@ -13,12 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.view;
+
+import javafx.scene.layout.Pane;
 
 /**
  *
  * @author fanny
  */
-public interface Deck {
-    
+public class GameView extends Pane {
+
+    public GameView() {
+
+    }
 }

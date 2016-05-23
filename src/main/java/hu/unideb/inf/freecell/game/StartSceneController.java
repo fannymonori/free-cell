@@ -1,4 +1,4 @@
-package hu.unideb.inf.freecell.Game;
+package hu.unideb.inf.freecell.game;
 
 import java.io.IOException;
 import java.net.URL;

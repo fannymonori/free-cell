@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,18 +24,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
+ *  Implementation of the Game interface.
  * @author fanny
  */
 public class GameImpl implements Game {
 
-    private List<List<Card>> tableau;
+    static Logger LOGGER = LoggerFactory.getLogger(Game.class);
+
+    private Tableau tableau;
 
     private HomeCells homeCells;
 
     private FreeCells freeCells;
-
-    static Logger LOGGER = LoggerFactory.getLogger(Game.class);
 
     public GameImpl() {
 
@@ -52,7 +52,7 @@ public class GameImpl implements Game {
 
         Collections.shuffle(deck, new Random(System.nanoTime()));
 
-        tableau = new ArrayList<>();
+        tableau = new Tableau();
 
         int it = 0;
         for (int i = 0; i < 8; i++) {
@@ -62,7 +62,7 @@ public class GameImpl implements Game {
                 pile.add(deck.get(it));
                 it++;
             }
-            tableau.add(pile);
+            tableau.piles.add(pile);
         }
 
         homeCells = new HomeCells();
@@ -93,22 +93,22 @@ public class GameImpl implements Game {
                 int sourceIndex = getCardPileIndex(cardSource);
 
                 List<Card> p = new ArrayList<>();
-                for (int i = 0; i < tableau.get(targetIndex).size(); i++) {
-                    p.add(new Card(tableau.get(targetIndex).get(i).getSuit(), tableau.get(targetIndex).get(i).getRank()));
+                for (int i = 0; i < tableau.piles.get(targetIndex).size(); i++) {
+                    p.add(new Card(tableau.piles.get(targetIndex).get(i).getSuit(), tableau.piles.get(targetIndex).get(i).getRank()));
                 }
                 p.add(new Card(cardSource.getSuit(), cardSource.getRank()));
-                tableau.set(targetIndex, p);
+                tableau.piles.set(targetIndex, p);
 
                 List<Card> p2 = new ArrayList<>();
-                for (int i = 0; i < tableau.get(sourceIndex).size() - 1; i++) {
-                    p2.add(new Card(tableau.get(sourceIndex).get(i).getSuit(), tableau.get(sourceIndex).get(i).getRank()));
+                for (int i = 0; i < tableau.piles.get(sourceIndex).size() - 1; i++) {
+                    p2.add(new Card(tableau.piles.get(sourceIndex).get(i).getSuit(), tableau.piles.get(sourceIndex).get(i).getRank()));
                 }
 
-                if (tableau.get(sourceIndex).size() - 1 == 0) {
+                if (tableau.piles.get(sourceIndex).size() - 1 == 0) {
                     p2.add(new Card("", 0));
                 }
 
-                tableau.set(sourceIndex, p2);
+                tableau.piles.set(sourceIndex, p2);
             }
         } else if (isFreeCellCard(cardSource)) {
             int index = -1;
@@ -121,11 +121,11 @@ public class GameImpl implements Game {
             int targetIndex = getCardPileIndex(cardTarget);
 
             List<Card> p = new ArrayList<>();
-            for (int i = 0; i < tableau.get(targetIndex).size(); i++) {
-                p.add(new Card(tableau.get(targetIndex).get(i).getSuit(), tableau.get(targetIndex).get(i).getRank()));
+            for (int i = 0; i < tableau.piles.get(targetIndex).size(); i++) {
+                p.add(new Card(tableau.piles.get(targetIndex).get(i).getSuit(), tableau.piles.get(targetIndex).get(i).getRank()));
             }
             p.add(new Card(cardSource.getSuit(), cardSource.getRank()));
-            tableau.set(targetIndex, p);
+            tableau.piles.set(targetIndex, p);
 
             freeCells.cards.remove(index);
         }
@@ -160,15 +160,15 @@ public class GameImpl implements Game {
 
         if (isTableauCard(cardSource)) {
             List<Card> p2 = new ArrayList<>();
-            for (int i = 0; i < tableau.get(sourceIndex).size() - 1; i++) {
-                p2.add(new Card(tableau.get(sourceIndex).get(i).getSuit(), tableau.get(sourceIndex).get(i).getRank()));
+            for (int i = 0; i < tableau.piles.get(sourceIndex).size() - 1; i++) {
+                p2.add(new Card(tableau.piles.get(sourceIndex).get(i).getSuit(), tableau.piles.get(sourceIndex).get(i).getRank()));
             }
 
-            if (tableau.get(sourceIndex).size() - 1 == 0) {
+            if (tableau.piles.get(sourceIndex).size() - 1 == 0) {
                 p2.add(new Card("", 0));
             }
 
-            tableau.set(sourceIndex, p2);
+            tableau.piles.set(sourceIndex, p2);
 
         } else if (isFreeCellCard(cardTarget)) {
             int index = -1;
@@ -196,15 +196,15 @@ public class GameImpl implements Game {
             int sourceIndex = getCardPileIndex(cardSource);
 
             List<Card> p = new ArrayList<>();
-            for (int i = 0; i < tableau.get(sourceIndex).size() - 1; i++) {
-                p.add(new Card(tableau.get(sourceIndex).get(i).getSuit(), tableau.get(sourceIndex).get(i).getRank()));
+            for (int i = 0; i < tableau.piles.get(sourceIndex).size() - 1; i++) {
+                p.add(new Card(tableau.piles.get(sourceIndex).get(i).getSuit(), tableau.piles.get(sourceIndex).get(i).getRank()));
             }
 
-            if (tableau.get(sourceIndex).size() - 1 == 0) {
+            if (tableau.piles.get(sourceIndex).size() - 1 == 0) {
                 p.add(new Card("", 0));
             }
 
-            tableau.set(sourceIndex, p);
+            tableau.piles.set(sourceIndex, p);
         }
 
         return true;
@@ -212,8 +212,8 @@ public class GameImpl implements Game {
 
     @Override
     public boolean isLast(Card card) {
-        for (int i = 0; i < this.tableau.size(); i++) {
-            if (this.tableau.get(i).get(tableau.get(i).size() - 1).equals(card)) {
+        for (int i = 0; i < this.tableau.piles.size(); i++) {
+            if (this.tableau.piles.get(i).get(tableau.piles.get(i).size() - 1).equals(card)) {
                 return true;
             }
         }
@@ -250,45 +250,10 @@ public class GameImpl implements Game {
         return savedGames;
     }
 
-    private boolean isTableauCard(Card card) {
-        for (int i = 0; i < this.tableau.size(); i++) {
-            for (int j = 0; j < this.tableau.get(i).size(); j++) {
-                if (this.tableau.get(i).get(j).equals(card)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isFreeCellCard(Card card) {
-        return freeCells.cards.stream().anyMatch((c) -> (c.equals(card)));
-    }
-
-    private boolean isHomeCellCard(Card c) {
-        return homeCells.piles.entrySet().stream().anyMatch((entry) -> (entry.getValue().get(entry.getValue().size() - 1).equals(c)));
-    }
-
-    private int getCardPileIndex(Card card) {
-        for (int i = 0; i < this.tableau.size(); i++) {
-            if (this.tableau.get(i).get(tableau.get(i).size() - 1).equals(card)) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     @Override
-    public void setTableau(List<List<Card>> t) {
-        tableau = new ArrayList<>();
-        for (List<Card> pile : t) {
-            List<Card> p = new ArrayList<>();
-            pile.stream().forEach((c) -> {
-                p.add(c);
-            });
-            tableau.add(pile);
-        }
+    public void setTableau(Tableau t) {
+        this.tableau = new Tableau();
+        this.tableau.setPiles(t.getPiles());
     }
 
     @Override
@@ -314,7 +279,37 @@ public class GameImpl implements Game {
     }
 
     @Override
-    public List<List<Card>> getTableau() {
+    public Tableau getTableau() {
         return this.tableau;
     }
+    
+    private boolean isTableauCard(Card card) {
+        for (int i = 0; i < this.tableau.getPiles().size(); i++) {
+            for (int j = 0; j < this.tableau.getPiles().get(i).size(); j++) {
+                if (this.tableau.getPiles().get(i).get(j).equals(card)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isFreeCellCard(Card card) {
+        return freeCells.cards.stream().anyMatch((c) -> (c.equals(card)));
+    }
+
+    private boolean isHomeCellCard(Card c) {
+        return homeCells.piles.entrySet().stream().anyMatch((entry) -> (entry.getValue().get(entry.getValue().size() - 1).equals(c)));
+    }
+
+    private int getCardPileIndex(Card card) {
+        for (int i = 0; i < this.tableau.getPiles().size(); i++) {
+            if (this.tableau.getPiles().get(i).get(tableau.getPiles().get(i).size() - 1).equals(card)) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
 }

@@ -1,4 +1,4 @@
-package hu.unideb.inf.freecell.Game;
+package hu.unideb.inf.freecell.game;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

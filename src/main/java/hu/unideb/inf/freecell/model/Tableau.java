@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,19 +22,21 @@ import java.util.List;
  *
  * @author fanny
  */
-public class FreeCells {
-    public List<Card> cards; //max 4 elem
+public class Tableau {
 
-    public FreeCells() {
-        cards = new ArrayList<>();
+    public List<List<Card>> piles;
+
+    public Tableau() {
+        piles = new ArrayList<>();
     }
-    
-    public void setPiles(List<Card> cards){
-        this.cards = new ArrayList<>(cards);
+
+    public List<List<Card>> getPiles() {
+        List<List<Card>> piles_ = new ArrayList<>(this.piles);
+        return piles_;
     }
-    
-    public List<Card> getPiles(){
-        List<Card> ret = new ArrayList<>(cards);
-        return ret;
+
+    public void setPiles(List<List<Card>> piles) {
+        this.piles = new ArrayList<>(piles);
     }
+
 }

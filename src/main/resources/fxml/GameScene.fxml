@@ -6,7 +6,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" fx:id="GamePane" prefHeight="600.0" prefWidth="1000.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.inf.freecell.Game.GameSceneController">
+<AnchorPane id="AnchorPane" fx:id="GamePane" prefHeight="600.0" prefWidth="1000.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="hu.unideb.inf.freecell.game.GameSceneController">
     <stylesheets>
         <URL value="@/styles/gamescene.css" />
     </stylesheets>
@@ -19,11 +19,6 @@
               <MenuItem fx:id="newGameMenuItem" mnemonicParsing="false" onAction="#onNewGameMenuAction" text="New Game" />
               <MenuItem fx:id="saveGameMenuItem" mnemonicParsing="false" onAction="#onSaveGameMenuAction" text="Save Game" />
               <MenuItem fx:id="loadGameMenuItem" mnemonicParsing="false" onAction="#onLoadGameMenuAction" text="Load Game" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
             </items>
           </Menu>
         </menus>

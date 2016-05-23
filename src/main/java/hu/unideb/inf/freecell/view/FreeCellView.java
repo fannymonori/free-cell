@@ -13,33 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.view;
 
-import java.util.List;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 /**
  *
  * @author fanny
  */
-public interface GameDAO {
+public class FreeCellView extends ImageView {
 
-    /**
-     *
-     * @param game
-     * @param name
-     */
-    public void saveGame(Game game, String name);
+    public Image backgroundImage;
 
-    /**
-     *
-     * @param game
-     * @param name
-     */
-    public void loadGame(Game game, String name);
+    public FreeCellView(String image) {
 
-    /**
-     *
-     * @return
-     */
-    public List<String> getSavedGames();
+        String cssStyle = "-fx-border-color: black;\n"
+                + "-fx-border-width: 3;\n";
+        this.setImage(new Image(image));
+
+        this.setFitWidth(100);
+        this.setFitHeight(140);
+
+    }
+
+    public void setBackgroundImage(Image backgroundImage) {
+        this.backgroundImage = backgroundImage;
+    }
+
+    public Image getBackgroundImage() {
+        return backgroundImage;
+    }
+
 }

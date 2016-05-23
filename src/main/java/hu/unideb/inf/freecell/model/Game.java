@@ -13,41 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package hu.unideb.inf.freecell.Model;
+package hu.unideb.inf.freecell.model;
 
 import java.util.List;
 
 /**
  * Interface that represents the game called FreeCell, and its rules.
+ *
  * @author fanny
  */
 public interface Game {
 
     /**
      * Places one card on another in the tableau deck;
+     *
      * @param cardSource The card to be placed on the tableau.
      * @param cardTarget The card to be placed on.
-     * @return True if the move was successful. Return false if the rules of the game does not permit this action.
+     * @return True if the move was successful. Return false if the rules of the
+     * game does not permit this action.
      */
     public boolean addToTableau(Card cardSource, Card cardTarget);
 
     /**
      * Places one card on one of the home cells;
+     *
      * @param cardSource The card to be placed on one of the home cells.
-     * @param cardTarget The card to be placed on. It must be one of the home cells.
-     * @return True if the move was successful. Return false if the rules of the game does not permit this action.
+     * @param cardTarget The card to be placed on. It must be one of the home
+     * cells.
+     * @return True if the move was successful. Return false if the rules of the
+     * game does not permit this action.
      */
     public boolean addToHomeCell(Card cardSource, Card cardTarget);
 
     /**
      * Places one card in the free cell pile;
+     *
      * @param cardSource The card to be placed in the free cell pile.
-     * @return True if the move was successful. Return false if the rules of the game does not permit this action.
+     * @return True if the move was successful. Return false if the rules of the
+     * game does not permit this action.
      */
     public boolean addToFreeCell(Card cardSource);
 
     /**
      * Decides whether a card is at the last place among the tableau piles.
+     *
      * @param card
      * @return True if the card is at the last place.
      */
@@ -55,45 +64,49 @@ public interface Game {
 
     /**
      * Decides whether the game has been won.
+     *
      * @return True is the game is finished.
      */
     public boolean hasWon();
 
     /**
      *
-     * @return
+     * @return Returns the representation of the games Free Cells.
      */
     public FreeCells getFreeCells();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return Returns the representation of the games Home Cells.
      */
     public HomeCells getHomeCells();
-    
+
     /**
-     * 
-     * @return 
+     *
+     * @return Returns the representation of the games Tableau.
      */
-    public List<List<Card>> getTableau();
-    
+    public Tableau getTableau();
+
     /**
-     * 
-     * @param f 
+     * Sets the games Free Cells.
+     *
+     * @param f
      */
     public void setFreeCell(FreeCells f);
-    
+
     /**
-     * 
-     * @param h 
+     * Sets the games Home Cells.
+     *
+     * @param h
      */
     public void setHomeCell(HomeCells h);
-    
+
     /**
-     * 
-     * @param t 
+     * Sets the games Tableau.
+     *
+     * @param t
      */
-    public void setTableau(List<List<Card>> t);
+    public void setTableau(Tableau t);
 
     /**
      * Initializes a new game.
@@ -101,20 +114,24 @@ public interface Game {
     public void newGame();
 
     /**
-     * 
-     * @param name 
+     * Saves a game.
+     *
+     * @param name Name of the save.
      */
     public void saveGame(String name);
 
     /**
-     * 
-     * @param name 
+     * Loads a game.
+     *
+     * @param name Name of the saved game.
      */
     public void loadGame(String name);
 
     /**
-     * 
-     * @return 
+     * Returns a list of the saved games.
+     *
+     * @return List of the saved games.
      */
     public List<String> getSavedGames();
+
 }

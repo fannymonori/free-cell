@@ -10,7 +10,7 @@
 	FreeCell is a solitaire-type card game played with 52-card playing card deck. There are four open cells called 'Free Cells' and
 	four destination cells called 'Home Cells'. Cards are ordered into eight cascades, four of which contains seven cards and four of which contains six cards.
   </description>
-  <inceptionYear>2015</inceptionYear>
+  <inceptionYear>2016</inceptionYear>
   <organization>
 	<name>University of Debrecen</name>
   </organization>
@@ -38,8 +38,6 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<mainClass>hu.unideb.inf.freecell.Game.Main</mainClass>
 	</properties>
-
-
 
 	<dependencies>
 		<dependency>
@@ -93,7 +91,7 @@
 					</descriptorRefs>
 					<archive>
 						<manifest>
-							<mainClass>hu.unideb.inf.freecell.Game.Main</mainClass>
+							<mainClass>hu.unideb.inf.freecell.game.Main</mainClass>
 						</manifest>
 					</archive>
 				</configuration>
